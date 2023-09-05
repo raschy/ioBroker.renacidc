@@ -1,0 +1,130 @@
+{
+    "common": {
+        "name": "renacidc",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "uk": "Початкова версія",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "Renac IDC",
+        "titleLang": {
+            "en": "Renac IDC",
+            "de": "Renac IDC",
+            "ru": "Ренак ИДЦ",
+            "pt": "Renac IDC",
+            "nl": "Renac IDC",
+            "fr": "Renac IDC",
+            "it": "Renac IDC",
+            "es": "IDC Renac",
+            "pl": "Renac IDC",
+            "uk": "Renac IDC",
+            "zh-cn": "瑞纳科IDC"
+        },
+        "desc": {
+            "en": "Reading the data from solar inverter",
+            "de": "Auslesen der Daten vom Solarwechselrichter",
+            "ru": "Чтение данных с солнечного инвертора",
+            "pt": "Lendo os dados do inversor solar",
+            "nl": "Het lezen van de gegevens van de omvormer voor zonne-energie",
+            "fr": "Lecture des données de l'onduleur solaire",
+            "it": "Lettura dei dati dall'inverter solare",
+            "es": "Lectura de datos del inversor solar.",
+            "pl": "Odczyt danych z falownika solarnego",
+            "uk": "Зчитування даних із сонячного інвертора",
+            "zh-cn": "从太阳能逆变器读取数据"
+        },
+        "authors": [
+            "raschy <raschy@gmx.de>"
+        ],
+        "keywords": [
+            "Renac",
+            "Inverter",
+            "Solar"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "renacidc.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/raschy/ioBroker.renacidc/main/admin/renacidc.png",
+        "readme": "https://github.com/raschy/ioBroker.renacidc/blob/main/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "energy",
+        "compact": true,
+        "connectionType": "cloud",
+        "dataSource": "poll",
+        "adminUI": {
+            "config": "json"
+        },
+        "dependencies": [
+            {
+                "js-controller": ">=4.0.0"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.13"
+            }
+        ]
+    },
+    "native": {
+        "username": "",
+        "password": "",
+        "pollInterval": 60
+    },
+    "protectedNative": [
+        "password"
+    ],
+    "encryptedNative": [
+        "password"
+    ],
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "Device or service connected",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.status",
+            "type": "state",
+            "common": {
+                "role": "info.status",
+                "name": "Status",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        }
+    ]
+}

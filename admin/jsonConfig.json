@@ -1,0 +1,40 @@
+{
+	"i18n": true,
+	"type": "tabs",
+	"items": {
+		"_configuration": {
+			"type": "panel",
+			"label": "_settings",
+			"items": {
+				"_headerSettings": {
+					"newLine": true,
+					"type": "header",
+					"text": "settings",
+					"size": 2
+				},
+				"username": {
+					"type": "text",
+					"sm": 12,
+					"md": 6,
+					"lg": 6,
+					"label": "username"
+				},
+				"password": {
+					"type": "password",
+					"sm": 12,
+					"md": 6,
+					"lg": 6,
+					"label": "password"
+				},
+				"pollInterval": {
+					"type": "number",
+					"sm": 12,
+					"md": 6,
+					"lg": 6,
+					"label": "pollInterval",
+					"tooltip": "tooltip_pollInterval"
+				}
+			}
+		}
+	}
+}

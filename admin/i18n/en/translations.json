@@ -1,0 +1,11 @@
+{
+	"renacidc adapter settings": "Adapter settings for Renac IDC",
+	"_settings": "S e t t i n g s",
+	"settings": "Settings",
+	"username": "Username",
+	"password": "Password",
+	"pollInterval": "Pollrate",
+	"tooltip_pollInterval": "Minimum value is 60 seconds",
+	"url": "Url",
+	"tooltip_url": "http://153.le-pv.com:8082/"
+}

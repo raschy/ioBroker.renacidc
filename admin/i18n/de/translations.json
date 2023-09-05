@@ -1,0 +1,13 @@
+{
+    "renacidc adapter settings": "Adaptereinstellungen für renacidc",
+    "option1": "Option 1",
+    "option2": "Option 2",
+    "_settings": "Einstellungen",
+    "settings": "Einstellungen",
+    "username": "Nutzername",
+    "password": "Passwort",
+    "pollInterval": "Umfragerate",
+    "tooltip_pollInterval": "Der Mindestwert beträgt 60 Sekunden",
+    "url": "URL",
+    "tooltip_url": "http://153.le-pv.com:8082/"
+}

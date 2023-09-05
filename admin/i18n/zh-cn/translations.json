@@ -1,0 +1,13 @@
+{
+    "renacidc adapter settings": "renacidc的适配器设置",
+    "option1": "选项1",
+    "option2": "选项2",
+    "_settings": "设置",
+    "settings": "设置",
+    "username": "用户名",
+    "password": "密码",
+    "pollInterval": "投票率",
+    "tooltip_pollInterval": "最小值为 60 秒",
+    "url": "网址",
+    "tooltip_url": "http://153.le-pv.com:8082/"
+}
