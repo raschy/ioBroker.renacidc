@@ -5,11 +5,11 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 'use strict';
-const utils = require('@iobroker/adapter-core');
-const api = require('./lib/apiClient.js');
 
 // Load your modules here, e.g.:
 // const fs = require("fs");
+const utils = require('@iobroker/adapter-core');
+const api = require('./lib/apiClient.js');
 
 class Renacidc extends utils.Adapter {
 
@@ -67,26 +67,28 @@ class Renacidc extends utils.Adapter {
 		}
 	}
 
+	/**
+	 * requestInverterData()
+	 */
 	async requestInverterData(){
+		this.log.info('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
 			this.log.debug(`UserID: ${userId}`);
 			//
 			const stationIdList = await this.stationList(userId);
-			this.log.debug(`StationList: ${stationIdList}`);
+			//this.log.debug(`StationList: ${stationIdList}`);
 			for (const stationId of stationIdList) {
 				this.log.debug(`StationID: ${stationId}`);
 				const deviceIdList = await this.deviceList(userId, stationId);
-				this.log.debug(`DeviceIdList: ${deviceIdList}`);
+				//this.log.debug(`DeviceIdList: ${deviceIdList}`);
 				for (const inverterSn of deviceIdList) {
 					this.log.debug(`InverterSN: ${inverterSn}`);
 					await this.updateData(await this.inverterData(inverterSn),userId);
 					//await this.alarmList(userId);
-					//await this.inverterDataHistorical(inverterSn);
+					//await this.inverterDataHistorical(inverterSn,2,await this.calcDateYesterday());
 				}
 			}
-			//await this.inverterDailyOutput(inverterSn);
-			//await this.readInverterParameters(inverterSn);
 			this.setState('info.connection', { val: true, ack: true });
 		}
 		catch (error) {
@@ -94,7 +96,7 @@ class Renacidc extends utils.Adapter {
 			this.log.debug(`[requestInverterData] catch ${JSON.stringify(error)}`);
 		}
 		finally {
-			this.log.debug(`[requestInverterData] finished`);
+			this.log.debug('[requestInverterData] finished');
 		}
 		//
 	}
@@ -130,22 +132,6 @@ class Renacidc extends utils.Adapter {
 			},
 			native: {}
 		});
-
-		/*
-		await this.setObjectNotExistsAsync(dp_Device, {
-			type: 'device',
-			common: {
-				name: userName
-			},
-			native: {},
-		});
-
-		await this.extendObjectAsync(dp_Device, {
-			common: {
-				name: userName,
-			},
-		});
-		*/
 
 		await this.setObjectNotExistsAsync(path + key, {
 			type: 'state',
@@ -214,75 +200,24 @@ class Renacidc extends utils.Adapter {
 	}
 
 	/**
-	 * readInverterParameters()
-	 * @param {*} inverterSN
-	 * @returns
-	 */
-	async readInverterParameters(inverterSN) {
-		console.log(`[readInverterParameters] InverterSN: ${inverterSN}`);
-		return api.axios
-			.post(
-				'api/setting/loadcodes',
-				{
-					'equSn' : String(inverterSN),
-					'type' : '12'
-				}
-			)
-			.then((response) => {
-				console.log ('readInverterParameters: ', response.data); //####
-				return response.data.data;
-			})
-			.catch((error) => {
-				this.log.warn(`[readInverterParameters] error: ${error.code}`);
-				return Promise.reject(error);
-			});
-	}
-
-	/**
-	 * inverterDailyOutput()
-	 * @param {*} inverterSN
-	 * @returns
-	 */
-	async inverterDailyOutput(inverterSN) {
-		console.log(`[inverterDailyOutput] InverterSN: ${inverterSN}`);
-		return api.axios
-			.post(
-				'renac/grid/powerChart',
-				{
-					'inv_sn' : String(inverterSN),
-					'time' : '2023-08-30'
-				}
-			)
-			.then((response) => {
-				//console.log ('inverterDailyOutput: ', response); //####
-				return response.data.data;
-			})
-			.catch((error) => {
-				this.log.warn(`[inverterDailyOutput] error: ${error.code}`);
-				return Promise.reject(error);
-			});
-	}
-
-	/**
 	 * inverterDataHistorical()
 	 * @param {*} inverterSN
 	 * @returns
 	 */
-	async inverterDataHistorical(inverterSN) {
-		console.log(`[inverterDataHistorical] InverterSN: ${inverterSN}`);
+	async inverterDataHistorical(inverterSN, chartType, chartData) {
+		//console.log(`[inverterDataHistorical] InverterSN: ${inverterSN}`);
 		return api.axios
 			.post(
 				'renac/storage/equChart',			// 2.2.9
 				//'renac/grid/equChart',			// 2.2.10
 				{
 					'inv_sn' : String(inverterSN),
-					'chart_type' : 2,
-					'time' : ' 2023-08-21'
+					'chart_type' : chartType,		// chart_type: 1=Daily, 2,=Weekly, 3=Monthly, 4=Yearly, 5=Total
+					'time' : chartData
 				}
 			)
 			.then((response) => {
-				console.log ('inverterDataHistorical: ', response.data.data); //####
-				return response.data;
+				return response.data.data;
 			})
 			.catch((error) => {
 				this.log.warn(`[inverterDataHistorical] error: ${error.code}`);
@@ -296,7 +231,7 @@ class Renacidc extends utils.Adapter {
 	 * @returns
 	 */
 	async alarmList(userId) {
-		console.log(`[alarmList] UserID: ${userId}`);
+		//console.log(`[alarmList] UserID: ${userId}`);
 		return api.axios
 			.post(
 				'api/home/errorList2',
@@ -309,13 +244,14 @@ class Renacidc extends utils.Adapter {
 				}
 			)
 			.then((response) => {
-				console.log ('alarmList: ', response.data.data); //####
+				//console.log ('alarmList: ', response.data.data); //####
 				/*
 				for (const obj of response.data.data.list) {
 					//this.deviceIdList.push(obj.INV_SN);	// DeviceId's
 				}
-				return response.data.data.list;
 				*/
+				return response.data.data;
+
 			})
 			.catch((error) => {
 				this.log.warn(`[alarmList] error: ${error.code}`);
@@ -356,7 +292,6 @@ class Renacidc extends utils.Adapter {
 	 */
 	async deviceList(userId, stationId) {
 		//console.log(`[deviceList] UserID: ${userId} StationID: ${stationId}`);
-		const deviceIdList =[];
 		return api.axios
 			.post(
 				'bg/equList',
@@ -368,6 +303,7 @@ class Renacidc extends utils.Adapter {
 				}
 			)
 			.then((response) => {
+				const deviceIdList =[];
 				for (const obj of response.data.data.list) {
 					deviceIdList.push(obj.INV_SN);	// DeviceId's
 				}
@@ -379,37 +315,6 @@ class Renacidc extends utils.Adapter {
 			});
 	}
 
-	/**
-	 * stationStatistic()
-	 * @param {*} stationId
-	 * @returns
-	 */
-	async stationStatistic(stationId) {
-		console.log(`[stationStatistic] StationID: ${stationId}`);
-		return api.axios
-			.post(
-				'renac/station/energy',
-				{
-					'statison_id' : stationId,
-					'time_type' : 4,
-					'time' : '0'
-				}
-			)
-			.then((response) => {
-				console.log ('#stationStatistic: ', response); //####
-				/*
-				for (const obj of response.data.data.list) {
-					this.stationIdList.push(obj.station_id);	// StationId's for devices
-					//console.log ('stationList Type: ', obj.station_type); //####
-				}
-				return response.data.data.list;
-				*/
-			})
-			.catch((error) => {
-				this.log.warn(`[stationStatistic] error: ${error.code}`);
-				return Promise.reject(error);
-			});
-	}
 
 	/**
 	 * stationList()
@@ -428,7 +333,7 @@ class Renacidc extends utils.Adapter {
 				}
 			)
 			.then((response) => {
-				const stationIdList = [];
+				const stationIdList =[];
 				for (const obj of response.data.data.list) {
 					stationIdList.push(obj.station_id);
 				}
@@ -518,6 +423,21 @@ class Renacidc extends utils.Adapter {
 			return typeof input === 'string' && input.length >= minLength;
 		}
 		*/
+	}
+
+	/**
+	 * calcDateYesterday()
+	 * @returns
+	 */
+	async calcDateYesterday() {
+		const today = new Date();
+		const yesterday = new Date(today);
+		yesterday.setDate(today.getDate() - 1);
+		// Convert the date into 'yyyy-mm-dd' format
+		const year = yesterday.getFullYear();
+		const month = (yesterday.getMonth() + 1).toString().padStart(2, '0');
+		const day = yesterday.getDate().toString().padStart(2, '0');
+		return year + '-' + month + '-' + day;
 	}
 
 }
