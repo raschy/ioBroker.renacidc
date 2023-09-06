@@ -133,6 +133,14 @@ class Renacidc extends utils.Adapter {
 			native: {}
 		});
 
+		/*
+		await this.extendObjectAsync(dp_Device, {
+			common: {
+				name: userName,
+			},
+		});
+*/
+
 		await this.setObjectNotExistsAsync(path + key, {
 			type: 'state',
 			common: {
