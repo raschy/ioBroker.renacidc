@@ -203,6 +203,8 @@ class Renacidc extends utils.Adapter {
 			if (regex.test(inputString)) return 'AH';
 			regex = new RegExp('temp');
 			if (regex.test(inputString)) return '°C';
+			regex = new RegExp('soc');
+			if (regex.test(inputString)) return '%';
 			return ' ';
 		}
 	}
