@@ -35,6 +35,26 @@
 					"tooltip": "tooltip_pollInterval"
 				}
 			}
+		},
+		"_blacklist": {
+			"type": "panel",
+			"label": "blacklist",
+			"items": {
+				"_headerBlacklist": {
+					"newLine": true,
+					"type": "header",
+					"text": "excludedValues",
+					"size": 2
+				},
+				"deviceBlacklist": {
+					"newLine": true,
+					"type": "chips",
+					"delimiter": ",",
+					"label": "termsToBeExcluded",
+					"help": "designateTheValues",
+					"sm": 12
+				}
+			}
 		}
 	}
 }

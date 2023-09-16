@@ -1,13 +1,13 @@
 {
-    "renacidc adapter settings": "Настройки адаптера для renacidc",
-    "option1": "Опция 1",
-    "option2": "вариант 2",
+    "renacidc adapter settings": "Настройки адаптера для Renac IDC",
     "_settings": "Настройки",
     "settings": "Настройки",
     "username": "Имя пользователя",
     "password": "Пароль",
     "pollInterval": "Опрос",
     "tooltip_pollInterval": "Минимальное значение — 60 секунд.",
-    "url": "URL",
-    "tooltip_url": "http://153.le-pv.com:8082/"
+    "blackList": "Черный список",
+    "excludedValues": "исключенные значения",
+    "termsToBeExcluded": "Условия, которые будут исключены",
+    "designateTheValues": "Обозначьте значения"
 }

@@ -24,6 +24,8 @@ class Renacidc extends utils.Adapter {
 		this.on('ready', this.onReady.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 		//
+		this.runFirst = false;
+		this.interactiveBlacklist = '';
 		this.checkUserDataOk = false;
 		this.executionInterval = 60;
 	}
@@ -35,6 +37,7 @@ class Renacidc extends utils.Adapter {
 		// Initialize your adapter here
 		this.setState('info.connection', { val: false, ack: true });
 		await this.checkUserData();
+		this.interactiveBlacklist = this.config.deviceBlacklist;
 		//
 		if (this.checkUserDataOk){
 			await this.requestInverterData();
@@ -84,7 +87,7 @@ class Renacidc extends utils.Adapter {
 				//this.log.debug(`DeviceIdList: ${deviceIdList}`);
 				for (const inverterSn of deviceIdList) {
 					this.log.debug(`InverterSN: ${inverterSn}`);
-					await this.updateData(await this.inverterData(inverterSn),userId);
+					await this.updateData(await this.inverterData(inverterSn),stationId);
 					//await this.alarmList(userId);
 					//await this.inverterDataHistorical(inverterSn,2,await this.calcDateYesterday());
 				}
@@ -98,19 +101,22 @@ class Renacidc extends utils.Adapter {
 		finally {
 			this.log.debug('[requestInverterData] finished');
 		}
+		this.manageBlacklist(this.interactiveBlacklist);
+		this.runFirst = true;
 		//
 	}
 
 	/**
 	 * save data in ioBroker datapoints
+	 * @param {*} stationId
 	 * @param {*} key
 	 * @param {*} name
 	 * @param {*} value
 	 * @param {*} role
 	 * @param {*} unit
 	 */
-	async persistData(user, key, name, value, role, unit) {
-		const dp_Device = String(user);
+	async persistData(stationId, key, name, value, role, unit) {
+		const dp_Device = String(stationId);
 		const path = dp_Device + '.';
 		// Type recognition
 		let type = 'string';
@@ -127,7 +133,7 @@ class Renacidc extends utils.Adapter {
 		await this.setObjectNotExists(dp_Device, {
 			type: 'channel',
 			common: {
-				name: 'User ID',
+				name: 'Station ID',
 				role: 'info'
 			},
 			native: {}
@@ -166,16 +172,32 @@ class Renacidc extends utils.Adapter {
 	/**
 	 * prepare data vor ioBroker
 	 * @param {*} data
-	 * @param {number} user
+	 * @param {number} stationId
 	 */
-	async updateData(data, user) {
-		if (user < 1) return;
+	async updateData(data, stationId) {
+		if (stationId < 1) return;
 		//
+		console.log(`Blacklist: ${this.config.deviceBlacklist}`);
 		for (const key in data) {
-			if (key != 'none') {
+			const result = this.config.deviceBlacklist.includes(key);
+			// Add deleted keys to the blacklist
+			const currentObj = await this.getStateAsync(stationId +'.'+ key);
+			if (!result && !currentObj && this.runFirst) {
+				if (this.interactiveBlacklist){
+					this.interactiveBlacklist += ', '+ key;
+				} else {
+					this.interactiveBlacklist += key;
+				}
+				console.log (`New Blacklist: ${this.interactiveBlacklist}`);
+			}
+			//
+			if (!result && key != 'none') {
+			//else if (key != 'none') {
 				const name = makeName(key);
 				const unit = guessUnit(key);
-				await this.persistData(user, key, name, data[key], 'value', unit);
+				await this.persistData(stationId, key, name, data[key], 'value', unit);
+			} else {
+				await this.deleteDeviceState(stationId, key);
 			}
 		}
 		//
@@ -208,6 +230,33 @@ class Renacidc extends utils.Adapter {
 			regex = new RegExp('soh');
 			if (regex.test(inputString)) return '%';
 			return ' ';
+		}
+	}
+
+	/**
+	 * manageBlacklist
+	 * @param {*} interactiveBlacklist
+	 */
+	async manageBlacklist(interactiveBlacklist) {
+		const blacklistChanged = this.config.deviceBlacklist.localeCompare(interactiveBlacklist);
+		// write into config if changes
+		if (blacklistChanged < 0) {
+			this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
+				if (err) {
+					this.log.error(`[manageBlacklist] ${err}`);
+				} else {
+					if (obj) {
+						obj.native.deviceBlacklist = interactiveBlacklist; // modify object
+						this.setForeignObject(obj._id, obj, (err) => {
+							if (err) {
+								this.log.error(`[manageBlacklist] Error while DeviceListUpdate: ${err}`);
+							} else {
+								this.log.debug(`[manageBlacklist] New Devicelist: ${interactiveBlacklist}`);
+							}
+						});
+					}
+				}
+			});
 		}
 	}
 
@@ -273,17 +322,17 @@ class Renacidc extends utils.Adapter {
 
 	/**
 	 * inverterData()
-	 * @param {*} inverterSN
+	 * @param {*} inverterSn
 	 * @returns data
 	 */
-	async inverterData(inverterSN) {
+	async inverterData(inverterSn) {
 		//console.log(`[inverterData] InverterSN: ${inverterSN}`);
 		return api.axios
 			.post(
 				//'renac/grid/equData',		//2.2.5
 				'renac/storage/equData',	//2.2.6
 				{
-					'equ_sn' : String(inverterSN)
+					'equ_sn' : String(inverterSn)
 				}
 			)
 			.then((response) => {
@@ -435,6 +484,31 @@ class Renacidc extends utils.Adapter {
 			return typeof input === 'string' && input.length >= minLength;
 		}
 		*/
+	}
+
+	/**
+	 * Deletes states
+	 * @param {number} userID
+	 * @param {*} stateName
+	 */
+	async deleteDeviceState(userID, stateName) {
+		const stateToDelete = userID + '.' + stateName;
+		try {
+			// Verify that associated object exists
+			const currentObj = await this.getStateAsync(stateToDelete);
+			if (currentObj) {
+				await this.delObjectAsync(stateToDelete);
+				this.log.debug(`[deleteDeviceState] Device ID: (${stateToDelete})`);
+			} else {
+				const currentState = await this.getStateAsync(stateName);
+				if (currentState) {
+					await this.deleteStateAsync(stateToDelete);
+					this.log.debug(`[deleteDeviceState] State: (${stateToDelete})`);
+				}
+			}
+		} catch (e) {
+			this.log.error(`[deleteDeviceState] error ${e} while deleting: (${stateToDelete})`);
+		}
 	}
 
 	/**

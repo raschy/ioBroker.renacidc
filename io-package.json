@@ -17,40 +17,40 @@
                 "zh-cn": "首次出版"
             }
         },
-        "title": "Renac IDC",
+        "title": "renacidc",
         "titleLang": {
-            "en": "Renac IDC",
-            "de": "Renac IDC",
-            "ru": "Ренак ИДЦ",
-            "pt": "Renac IDC",
-            "nl": "Renac IDC",
-            "fr": "Renac IDC",
-            "it": "Renac IDC",
-            "es": "IDC Renac",
-            "pl": "Renac IDC",
-            "uk": "Renac IDC",
-            "zh-cn": "瑞纳科IDC"
+            "en": "renacidc",
+            "de": "renacidc",
+            "ru": "Ренацид",
+            "pt": "renacidc",
+            "nl": "reacidc",
+            "fr": "renacidc",
+            "it": "rinacidc",
+            "es": "renacidc",
+            "pl": "renacidc",
+            "uk": "ренацид",
+            "zh-cn": "雷诺酸"
         },
         "desc": {
-            "en": "Reading the data from solar inverter",
-            "de": "Auslesen der Daten vom Solarwechselrichter",
-            "ru": "Чтение данных с солнечного инвертора",
-            "pt": "Lendo os dados do inversor solar",
-            "nl": "Het lezen van de gegevens van de omvormer voor zonne-energie",
-            "fr": "Lecture des données de l'onduleur solaire",
-            "it": "Lettura dei dati dall'inverter solare",
-            "es": "Lectura de datos del inversor solar.",
-            "pl": "Odczyt danych z falownika solarnego",
-            "uk": "Зчитування даних із сонячного інвертора",
-            "zh-cn": "从太阳能逆变器读取数据"
+            "en": "Data collection from solar inverter renac",
+            "de": "Datenerfassung vom Solarwechselrichter Renac",
+            "ru": "Сбор данных с солнечного инвертора Renac",
+            "pt": "Coleta de dados do inversor solar renac",
+            "nl": "Gegevensverzameling van renac-omvormer voor zonne-energie",
+            "fr": "Collecte de données de l'onduleur solaire Renac",
+            "it": "Raccolta dati da inverter solare renac",
+            "es": "Toma de datos del inversor solar renac.",
+            "pl": "Zbieranie danych z falownika fotowoltaicznego renac",
+            "uk": "Збір даних від сонячного інвертора renac",
+            "zh-cn": "太阳能逆变器 renac 的数据收集"
         },
         "authors": [
             "raschy <raschy@gmx.de>"
         ],
         "keywords": [
-            "Renac",
+            "Solar",
             "Inverter",
-            "Solar"
+            "Renac"
         ],
         "license": "MIT",
         "platform": "Javascript/Node.js",
@@ -70,7 +70,7 @@
         },
         "dependencies": [
             {
-                "js-controller": ">=4.0.0"
+                "js-controller": ">=3.3.22"
             }
         ],
         "globalDependencies": [
@@ -82,7 +82,8 @@
     "native": {
         "username": "",
         "password": "",
-        "pollInterval": 60
+        "pollInterval": 60,
+        "deviceBlacklist": ""
     },
     "protectedNative": [
         "password"
@@ -110,19 +111,6 @@
                 "read": true,
                 "write": false,
                 "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.status",
-            "type": "state",
-            "common": {
-                "role": "info.status",
-                "name": "Status",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
             },
             "native": {}
         }

@@ -6,6 +6,8 @@
 	"password": "Password",
 	"pollInterval": "Pollrate",
 	"tooltip_pollInterval": "Minimum value is 60 seconds",
-	"url": "Url",
-	"tooltip_url": "http://153.le-pv.com:8082/"
+	"blackList": "Blacklist",
+	"excludedValues": "excluded Values",
+	"termsToBeExcluded": "Terms this will be excluded",
+	"designateTheValues": "Designate the values"
 }
