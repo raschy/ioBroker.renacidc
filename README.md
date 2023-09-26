@@ -12,14 +12,14 @@
 
 ## renacidc adapter for ioBroker
 
-Reading the data from solar inverter
+Reading the data from solar inverter 
 
 ## User manual
 Only the login name and password used for the Renacpower online portal are required for commissioning.
 
 ### DISCLAIMER
 
-All product and company names or logos are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them or any associated subsidiaries! This personal project is maintained in spare time and has no business goal. RENAC is a trademark with Copyright © 2010-2022 China Headquarters Renacpower, Address: Block C-12-1, Comprehensive Bonded Zone, No.1 of Zone 5, No. 20 Datong Road, Suzhou Hi-Tech District, Suzhou.
+All product and company names or logos are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them or any associated subsidiaries! This personal project is maintained in spare time and has no business goal. Therefore, do not send any enquiries to this company.RENAC is a trademark with Copyright © 2010-2022 China Headquarters Renacpower, Address: Block C-12-1, Comprehensive Bonded Zone, No.1 of Zone 5, No. 20 Datong Road, Suzhou Hi-Tech District, Suzhou.
 
 ## Changelog
 <!--

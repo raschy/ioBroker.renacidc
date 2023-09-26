@@ -15,7 +15,7 @@
 		"resolveJsonModule": true,
 
 		// If you want to disable the stricter type checks (not recommended), uncomment the following line
-		// "strict": false,
+		//"strict": true,
 		// And enable some of those features for more fine-grained control
 		// "strictNullChecks": true,
 		// "strictPropertyInitialization": true,
