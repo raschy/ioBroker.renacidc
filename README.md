@@ -27,6 +27,9 @@ This personal project is maintained in spare time and has no business goal. RENA
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (raschy) Deploy(2) on npm
+
 ### 0.0.4 (2023-09-28)
 * (raschy) Deploy on npm
 
@@ -34,7 +37,7 @@ This personal project is maintained in spare time and has no business goal. RENA
 * (raschy) some code clean-up
 
 ### 0.0.2 (2023-09-26)
-* (raschy) initial release
+* (raschy) initial release(2)
 
 ### 0.0.1 (2023-09-24)
 * (raschy) initial release
