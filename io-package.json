@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": "Deploy(2) on npm",
+        "de": "Bereitstellung(2) auf npm",
+        "ru": "Развертывание(2) в npm",
+        "pt": "Implante(2) no npm",
+        "nl": "Vertaling:",
+        "fr": "Déploiement(2) sur npm",
+        "it": "Distribuzione(2) alle npm",
+        "es": "Despliegue (2) en npm",
+        "pl": "Deploy(2) na przykład",
+        "uk": "Розгортання(2) на npm",
+        "zh-cn": "页:1"
+      },
       "0.0.4": {
         "en": "Deploy on npm",
         "de": "Bereitstellung auf npm",
