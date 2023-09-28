@@ -5,13 +5,13 @@
     "news": {
       "0.0.2": {
         "en": "initial release",
-        "de": "erstausstrahlung",
+        "de": "Erstveröffentlichung",
         "ru": "начальный выпуск",
         "pt": "lançamento inicial",
-        "nl": "niet",
+        "nl": "Eerste uitgave",
         "fr": "initial release",
-        "it": "rilascio iniziale",
-        "es": "liberación inicial",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
         "pl": "pierwsze wydanie",
         "uk": "початковий реліз",
         "zh-cn": "初步释放"
