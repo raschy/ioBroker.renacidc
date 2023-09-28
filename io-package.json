@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "news": {
+      "0.0.3": {
+        "en": "some code clean-up",
+        "de": "einige code-reinigung",
+        "ru": "некоторый код очистить",
+        "pt": "algum código de limpeza",
+        "nl": "een code schoonmaken",
+        "fr": "de nettoyage de code",
+        "it": "qualche codice di pulizia",
+        "es": "algo de limpieza de código",
+        "pl": "niektóre kody czyściły",
+        "uk": "деякий код очищення",
+        "zh-cn": "一些守则的清洁"
+      },
       "0.0.2": {
         "en": "initial release",
         "de": "Erstveröffentlichung",

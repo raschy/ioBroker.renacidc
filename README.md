@@ -27,8 +27,7 @@ This personal project is maintained in spare time and has no business goal. RENA
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.0.3 (2023-09-28)
 * (raschy) some code clean-up
 
 ### 0.0.2 (2023-09-26)
