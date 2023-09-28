@@ -1,6 +1,6 @@
 {
   "name": "iobroker.renacidc",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Reading the data from solar inverter",
   "author": {
     "name": "raschy",
