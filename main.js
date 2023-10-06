@@ -461,7 +461,7 @@ class Renacidc extends utils.Adapter {
 		*/
 		// __________________
 		// check if the sync time is a number, if not, the string is parsed to a number
-		if (isNaN(this.config.pollInterval) || this.config.pollInterval < 10) {
+		if (isNaN(this.config.pollInterval) || this.config.pollInterval < 60) {
 			this.executionInterval = 60;
 		} else {
 			this.executionInterval = this.config.pollInterval;
