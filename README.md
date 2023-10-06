@@ -21,12 +21,16 @@ Only the login name and password used for the Renacpower online portal are requi
 
 All product and company names or logos are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them or any associated subsidiaries! Therefore, do not send any enquiries to this company. 
 This personal project is maintained in spare time and has no business goal. RENAC is a trademark with Copyright © 2010-2022 China Headquarters Renacpower, Address: Block C-12-1, Comprehensive Bonded Zone, No.1 of Zone 5, No. 20 Datong Road, Suzhou Hi-Tech District, Suzhou.
+For further information on the product range, please visit the official website: https://www.renacpower.com/
 
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (raschy) Preparation for transfer to latest
+
 ### 0.0.5 (2023-09-28)
 * (raschy) Deploy(2) on npm
 

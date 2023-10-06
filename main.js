@@ -10,6 +10,8 @@
 const utils = require('@iobroker/adapter-core');
 const api = require('./lib/apiClient.js');
 
+let adapter;    // adapter instance - @type {ioBroker.Adapter}
+
 class Renacidc extends utils.Adapter {
 
 	/**
@@ -20,6 +22,10 @@ class Renacidc extends utils.Adapter {
 			...options,
 			name: 'renacidc',
 		});
+		adapter = utils.adapter(Object.assign({}, options, {
+			name: 'renacidc',
+		}));
+
 		this.on('ready', this.onReady.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 		//
@@ -111,8 +117,8 @@ class Renacidc extends utils.Adapter {
 	 * @param {*} unit
 	 */
 	async persistData(stationId, key, name, value, role, unit) {
-		const dp_Device = String(stationId);
-		const dp_Value = dp_Device + '.' + key;
+		const dp_Device = name2id(String(stationId));
+		const dp_Value = dp_Device + '.' + name2id(key);
 		//
 		await this.setObjectNotExists(dp_Device, {
 			type: 'channel',
@@ -155,11 +161,14 @@ class Renacidc extends utils.Adapter {
 			});
 		}
 		//
-		//console.log(`[persistData] Device "${dp_Device}"  Key "${key}" with value: "${value}" and unit "${unit}" with role "${role}" as type "${type}"`);
+		//console.log(`[persistData] Device "${dp_Device}"  Key "${key}" with value: "${value}" and unit "${unit}" with role "${role}" as type "{type}"`);
 		await this.setStateAsync(dp_Value, { val: value, ack: true, q: 0x00 });
 		//
 		function isNumber(n) {
 			return !isNaN(parseFloat(n)) && !isNaN(n - 0);
+		}
+		function name2id(pName) {
+			return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_');
 		}
 	}
 
@@ -169,6 +178,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {number} stationId
 	 */
 	async updateData(data, stationId) {
+		console.log ('updateData', stationId);
 		if (stationId < 1) return;
 		//
 		for (const key in data) {
@@ -185,8 +195,8 @@ class Renacidc extends utils.Adapter {
 			//
 			if (!result && key != 'none') {
 				const name = makeName(key);
-				const unit = guessUnit(key);
-				await this.persistData(stationId, key, name, data[key], 'value', unit);
+				const stateroles = guessUnit(key);
+				await this.persistData(stationId, key, name, data[key], stateroles.role, stateroles.unit);
 			} else {
 				await this.deleteDeviceState(stationId, key);
 			}
@@ -203,24 +213,24 @@ class Renacidc extends utils.Adapter {
 		//	Trying to guess the unit of measurement
 		function guessUnit(inputString){
 			let regex = new RegExp('vol');
-			if (regex.test(inputString)) return 'V';
+			if (regex.test(inputString)) return { role: 'value.voltage', unit: 'V' };
 			regex = new RegExp('cur');
-			if (regex.test(inputString)) return 'A';
+			if (regex.test(inputString)) return { role: 'value.current', unit: 'A' };
 			regex = new RegExp('fre');
-			if (regex.test(inputString)) return 'Hz';
+			if (regex.test(inputString)) return { role: 'value', unit: 'Hz' };
 			regex = new RegExp('power');
-			if (regex.test(inputString)) return 'W';
+			if (regex.test(inputString)) return { role: 'value.power', unit: 'W' };
 			regex = new RegExp('energy');
-			if (regex.test(inputString)) return 'kWh';
+			if (regex.test(inputString)) return { role: 'value.energy', unit: 'kWh' };
 			regex = new RegExp('capac');
-			if (regex.test(inputString)) return 'AH';
+			if (regex.test(inputString)) return { role: 'value', unit: 'AH' };
 			regex = new RegExp('temp');
-			if (regex.test(inputString)) return '°C';
+			if (regex.test(inputString)) return { role: 'value.temperature', unit: '°C' };
 			regex = new RegExp('soc');
-			if (regex.test(inputString)) return '%';
+			if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
 			regex = new RegExp('soh');
-			if (regex.test(inputString)) return '%';
-			return ' ';
+			if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
+			return { role: 'value', unit: ' ' };
 		}
 	}
 
