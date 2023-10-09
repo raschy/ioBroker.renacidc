@@ -168,7 +168,8 @@ class Renacidc extends utils.Adapter {
 			return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 		}
 		function name2id(pName) {
-			return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_');
+			return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_').replace(/[-\s]/g, '_');
+			//return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_');
 		}
 	}
 
@@ -178,7 +179,6 @@ class Renacidc extends utils.Adapter {
 	 * @param {number} stationId
 	 */
 	async updateData(data, stationId) {
-		console.log ('updateData', stationId);
 		if (stationId < 1) return;
 		//
 		for (const key in data) {
