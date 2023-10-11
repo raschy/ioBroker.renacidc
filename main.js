@@ -10,8 +10,6 @@
 const utils = require('@iobroker/adapter-core');
 const api = require('./lib/apiClient.js');
 
-let adapter;    // adapter instance - @type {ioBroker.Adapter}
-
 class Renacidc extends utils.Adapter {
 
 	/**
@@ -22,9 +20,6 @@ class Renacidc extends utils.Adapter {
 			...options,
 			name: 'renacidc',
 		});
-		adapter = utils.adapter(Object.assign({}, options, {
-			name: 'renacidc',
-		}));
 
 		this.on('ready', this.onReady.bind(this));
 		this.on('unload', this.onUnload.bind(this));
@@ -117,8 +112,8 @@ class Renacidc extends utils.Adapter {
 	 * @param {*} unit
 	 */
 	async persistData(stationId, key, name, value, role, unit) {
-		const dp_Device = name2id(String(stationId));
-		const dp_Value = dp_Device + '.' + name2id(key);
+		const dp_Device = removeInvalidCharacters(String(stationId));
+		const dp_Value = dp_Device + '.' + removeInvalidCharacters(key);
 		//
 		await this.setObjectNotExists(dp_Device, {
 			type: 'channel',
@@ -167,9 +162,10 @@ class Renacidc extends utils.Adapter {
 		function isNumber(n) {
 			return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 		}
-		function name2id(pName) {
-			return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_').replace(/[-\s]/g, '_');
-			//return (pName || '').replace(adapter.FORBIDDEN_CHARS, '_');
+		function removeInvalidCharacters(inputString) {
+			const regexPattern = '[^a-zA-Z0-9]+';
+			const regex = new RegExp(regexPattern, 'g');
+			return inputString.replace(regex, '_');
 		}
 	}
 
