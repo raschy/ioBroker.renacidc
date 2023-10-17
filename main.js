@@ -42,7 +42,7 @@ class Renacidc extends utils.Adapter {
 		if (this.checkUserDataOk){
 			await this.requestInverterData();
 			//
-			this.updateInterval = setInterval(async () => {
+			this.updateInterval = this.setInterval(async () => {
 				await this.requestInverterData();
 			}, this.executionInterval * 1000);
 		} else {
@@ -164,7 +164,7 @@ class Renacidc extends utils.Adapter {
 		}
 		function removeInvalidCharacters(inputString) {
 			const regexPattern = '[^a-zA-Z0-9]+';
-			const regex = new RegExp(regexPattern, 'g');
+			const regex = new RegExp(regexPattern, 'gu');
 			return inputString.replace(regex, '_');
 		}
 	}
