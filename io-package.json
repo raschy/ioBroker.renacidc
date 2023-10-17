@@ -1,169 +1,182 @@
 {
-    "common": {
-        "name": "renacidc",
-        "version": "0.0.5",
-        "news": {
-            "0.0.5": {
-                "en": "Deploy(2) on npm",
-                "de": "Bereitstellung(2) auf npm",
-                "ru": "Развертывание(2) в npm",
-                "pt": "Implante(2) no npm",
-                "nl": "Vertaling:",
-                "fr": "Déploiement(2) sur npm",
-                "it": "Distribuzione(2) alle npm",
-                "es": "Despliegue (2) en npm",
-                "pl": "Deploy(2) na przykład",
-                "uk": "Розгортання(2) на npm",
-                "zh-cn": "页:1"
-            },
-            "0.0.4": {
-                "en": "Deploy on npm",
-                "de": "Bereitstellung auf npm",
-                "ru": "Развертывание на npm",
-                "pt": "Implante em npm",
-                "nl": "Vertaling:",
-                "fr": "Déploiement sur npm",
-                "it": "Deploy on npm",
-                "es": "Despliegue en npm",
-                "pl": "Przykłady",
-                "uk": "Розгортання на npm",
-                "zh-cn": "页:1"
-            },
-            "0.0.3": {
-                "en": "some code clean-up",
-                "de": "einige code-reinigung",
-                "ru": "некоторый код очистить",
-                "pt": "algum código de limpeza",
-                "nl": "een code schoonmaken",
-                "fr": "de nettoyage de code",
-                "it": "qualche codice di pulizia",
-                "es": "algo de limpieza de código",
-                "pl": "niektóre kody czyściły",
-                "uk": "деякий код очищення",
-                "zh-cn": "一些守则的清洁"
-            },
-            "0.0.2": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "начальный выпуск",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "initial release",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "pierwsze wydanie",
-                "uk": "початковий реліз",
-                "zh-cn": "初步释放"
-            },
-            "0.0.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "uk": "Початкова версія",
-                "zh-cn": "首次出版"
-            }
-        },
-        "titleLang": {
-            "en": "renacidc",
-            "de": "renacidc",
-            "ru": "Ренацид",
-            "pt": "renacidc",
-            "nl": "reacidc",
-            "fr": "renacidc",
-            "it": "rinacidc",
-            "es": "renacidc",
-            "pl": "renacidc",
-            "uk": "ренацид",
-            "zh-cn": "雷诺酸"
-        },
-        "desc": {
-            "en": "Data collection from solar inverter renac",
-            "de": "Datenerfassung vom Solarwechselrichter Renac",
-            "ru": "Сбор данных с солнечного инвертора Renac",
-            "pt": "Coleta de dados do inversor solar renac",
-            "nl": "Gegevensverzameling van renac-omvormer voor zonne-energie",
-            "fr": "Collecte de données de l'onduleur solaire Renac",
-            "it": "Raccolta dati da inverter solare renac",
-            "es": "Toma de datos del inversor solar renac.",
-            "pl": "Zbieranie danych z falownika fotowoltaicznego renac",
-            "uk": "Збір даних від сонячного інвертора renac",
-            "zh-cn": "太阳能逆变器 renac 的数据收集"
-        },
-        "authors": [
-            "raschy <raschy@gmx.de>"
-        ],
-        "keywords": [
-            "Solar",
-            "Inverter",
-            "Renac"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "main": "main.js",
-        "icon": "renacidc.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/raschy/ioBroker.renacidc/main/admin/renacidc.png",
-        "readme": "https://github.com/raschy/ioBroker.renacidc/blob/main/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "energy",
-        "compact": true,
-        "connectionType": "cloud",
-        "dataSource": "poll",
-        "adminUI": {
-            "config": "json"
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=4.0.24"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.1.13"
-            }
-        ]
+  "common": {
+    "name": "renacidc",
+    "version": "0.0.6",
+    "news": {
+      "0.0.6": {
+        "en": "Preparation for transfer to latest",
+        "de": "Vorbereitung auf den Transfer",
+        "ru": "Подготовка к передаче до последней",
+        "pt": "Preparação para transferência para as últimas",
+        "nl": "Voorbereiden voor overplaatsing naar het laatste",
+        "fr": "Préparation au transfert au plus tard",
+        "it": "Preparazione per il trasferimento all'ultimo",
+        "es": "Preparación para transferencia a más tardar",
+        "pl": "Przygotowanie do najnowszego transferu do najnowszej części",
+        "uk": "Підготовка до переходу на останні",
+        "zh-cn": "准备向最近转让"
+      },
+      "0.0.5": {
+        "en": "Deploy(2) on npm",
+        "de": "Bereitstellung(2) auf npm",
+        "ru": "Развертывание(2) в npm",
+        "pt": "Implante(2) no npm",
+        "nl": "Vertaling:",
+        "fr": "Déploiement(2) sur npm",
+        "it": "Distribuzione(2) alle npm",
+        "es": "Despliegue (2) en npm",
+        "pl": "Deploy(2) na przykład",
+        "uk": "Розгортання(2) на npm",
+        "zh-cn": "页:1"
+      },
+      "0.0.4": {
+        "en": "Deploy on npm",
+        "de": "Bereitstellung auf npm",
+        "ru": "Развертывание на npm",
+        "pt": "Implante em npm",
+        "nl": "Vertaling:",
+        "fr": "Déploiement sur npm",
+        "it": "Deploy on npm",
+        "es": "Despliegue en npm",
+        "pl": "Przykłady",
+        "uk": "Розгортання на npm",
+        "zh-cn": "页:1"
+      },
+      "0.0.3": {
+        "en": "some code clean-up",
+        "de": "einige code-reinigung",
+        "ru": "некоторый код очистить",
+        "pt": "algum código de limpeza",
+        "nl": "een code schoonmaken",
+        "fr": "de nettoyage de code",
+        "it": "qualche codice di pulizia",
+        "es": "algo de limpieza de código",
+        "pl": "niektóre kody czyściły",
+        "uk": "деякий код очищення",
+        "zh-cn": "一些守则的清洁"
+      },
+      "0.0.2": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "начальный выпуск",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "initial release",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "pierwsze wydanie",
+        "uk": "початковий реліз",
+        "zh-cn": "初步释放"
+      },
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "Початкова версія",
+        "zh-cn": "首次出版"
+      }
     },
-    "native": {
-        "username": "",
-        "password": "",
-        "pollInterval": 60,
-        "deviceBlacklist": ""
+    "titleLang": {
+      "en": "renacidc",
+      "de": "renacidc",
+      "ru": "Ренацид",
+      "pt": "renacidc",
+      "nl": "reacidc",
+      "fr": "renacidc",
+      "it": "rinacidc",
+      "es": "renacidc",
+      "pl": "renacidc",
+      "uk": "ренацид",
+      "zh-cn": "雷诺酸"
     },
-    "protectedNative": [
-        "password"
+    "desc": {
+      "en": "Data collection from solar inverter renac",
+      "de": "Datenerfassung vom Solarwechselrichter Renac",
+      "ru": "Сбор данных с солнечного инвертора Renac",
+      "pt": "Coleta de dados do inversor solar renac",
+      "nl": "Gegevensverzameling van renac-omvormer voor zonne-energie",
+      "fr": "Collecte de données de l'onduleur solaire Renac",
+      "it": "Raccolta dati da inverter solare renac",
+      "es": "Toma de datos del inversor solar renac.",
+      "pl": "Zbieranie danych z falownika fotowoltaicznego renac",
+      "uk": "Збір даних від сонячного інвертора renac",
+      "zh-cn": "太阳能逆变器 renac 的数据收集"
+    },
+    "authors": [
+      "raschy <raschy@gmx.de>"
     ],
-    "encryptedNative": [
-        "password"
+    "keywords": [
+      "Solar",
+      "Inverter",
+      "Renac"
     ],
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "main.js",
+    "icon": "renacidc.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/raschy/ioBroker.renacidc/main/admin/renacidc.png",
+    "readme": "https://github.com/raschy/ioBroker.renacidc/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "energy",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=4.0.24"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.13"
+      }
     ]
+  },
+  "native": {
+    "username": "",
+    "password": "",
+    "pollInterval": 60,
+    "deviceBlacklist": ""
+  },
+  "protectedNative": [
+    "password"
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }

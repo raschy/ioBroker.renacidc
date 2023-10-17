@@ -28,7 +28,7 @@ For further information on the product range, please visit the official website:
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.0.6 (2023-10-17)
 * (raschy) Preparation for transfer to latest
 
 ### 0.0.5 (2023-09-28)
