@@ -112,8 +112,8 @@ class Renacidc extends utils.Adapter {
 	 * @param {*} unit
 	 */
 	async persistData(stationId, key, name, value, role, unit) {
-		const dp_Device = removeInvalidCharacters(String(stationId));
-		const dp_Value = dp_Device + '.' + removeInvalidCharacters(key);
+		const dp_Device = this.removeInvalidCharacters(String(stationId));
+		const dp_Value = dp_Device + '.' + this.removeInvalidCharacters(key);
 		//
 		await this.setObjectNotExists(dp_Device, {
 			type: 'channel',
@@ -126,7 +126,7 @@ class Renacidc extends utils.Adapter {
 		});
 		//
 		// Type recognition <number>
-		if (isNumber(value)) {
+		if (this.isNumber(value)) {
 			value = parseFloat(value);
 			//
 			await this.setObjectNotExistsAsync(dp_Value, {
@@ -159,14 +159,6 @@ class Renacidc extends utils.Adapter {
 		//console.log(`[persistData] Device "${dp_Device}"  Key "${key}" with value: "${value}" and unit "${unit}" with role "${role}" as type "{type}"`);
 		await this.setStateAsync(dp_Value, { val: value, ack: true, q: 0x00 });
 		//
-		function isNumber(n) {
-			return !isNaN(parseFloat(n)) && !isNaN(n - 0);
-		}
-		function removeInvalidCharacters(inputString) {
-			const regexPattern = '[^a-zA-Z0-9]+';
-			const regex = new RegExp(regexPattern, 'gu');
-			return inputString.replace(regex, '_');
-		}
 	}
 
 	/**
@@ -482,11 +474,13 @@ class Renacidc extends utils.Adapter {
 
 	/**
 	 * Deletes states
-	 * @param {number} userID
+	 * @param {number} stationId
 	 * @param {*} stateName
 	 */
-	async deleteDeviceState(userID, stateName) {
-		const stateToDelete = userID + '.' + stateName;
+	async deleteDeviceState(stationId, stateName) {
+		//const stateToDelete = stationId + '.' + stateName;
+		const stateToDelete = this.removeInvalidCharacters(String(stationId)) + '.' + this.removeInvalidCharacters(stateName);
+
 		try {
 			// Verify that associated object exists
 			const currentObj = await this.getStateAsync(stateToDelete);
@@ -519,7 +513,16 @@ class Renacidc extends utils.Adapter {
 		const day = yesterday.getDate().toString().padStart(2, '0');
 		return year + '-' + month + '-' + day;
 	}
-
+	// Helper
+	isNumber(n) {
+		return !isNaN(parseFloat(n)) && !isNaN(n - 0);
+	}
+	//
+	removeInvalidCharacters(inputString) {
+		const regexPattern = '[^a-zA-Z0-9]+';
+		const regex = new RegExp(regexPattern, 'gu');
+		return inputString.replace(regex, '_');
+	}
 }
 
 if (require.main !== module) {
