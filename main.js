@@ -414,7 +414,8 @@ class Renacidc extends utils.Adapter {
 				return Promise.reject(error);
 			});
 	}
-
+	// Use the specified coordinates from the configuration
+	//
 	/**
 	 * checkUserData()
 	 * @returns checkUserDataOk
