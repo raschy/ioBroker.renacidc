@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.0.6",
+    "version": "0.1.0",
     "news": {
+      "0.1.0": {
+        "en": "Adaptation to changed circumstances \nupdated dependencies\nNodeJS >= 18.x and js-controller >= 5 is required\nApiClient removed (access blocked)",
+        "de": "Anpassung an veränderte Umstände\naktualisierte abhängigkeiten\nNodeJS >= 18.x und js-Controller >= 5 ist erforderlich\nApiClient entfernt (Zugriff blockiert)",
+        "ru": "Адаптация к измененным обстоятельствам\nобновленные зависимости\nNodeJS >= 18.x и js-контроллер >= 5 требуется\nApiClient удален (доступ заблокирован)",
+        "pt": "Adaptação a circunstâncias alteradas\ndependências atualizadas\nNodeJS >= 18.x e js-controller >= 5 é necessário\nApiClient removido (acesso bloqueado)",
+        "nl": "Aanpassing aan gewijzigde omstandigheden\nbijgewerkte afhankelijkheden\nVoor de toepassing van de onderverdelingen 870190 tot en met 870290 wordt onder post 8702 verstaan: 5 is vereist\nApiClient verwijderd (toegang geblokkeerd)",
+        "fr": "Adaptation aux nouvelles circonstances\ndépendances actualisées\nNodeJS >= 18.x et js-controller >= 5 est nécessaire\nApiClient enlevé (accès bloqué)",
+        "it": "Adattamento alle circostanze cambiate\ndipendenze aggiornate\nNodeJS >= 18.x e js-controller 5 è richiesto\nApiClient rimosso (accesso bloccato)",
+        "es": "Adaptación a circunstancias cambiantes\ndependencias actualizadas\nNodeJS >= 18.x y js-controller Se requiere 5\nApiClient eliminado (acceso bloqueado)",
+        "pl": "Dostosowanie do zmienionych okoliczności\nzaktualizowane zależności\nNodeJS > = 18.x i kontroler js- > = 5 jest wymagane\nApiClient usunięty (dostęp zablokowany)",
+        "uk": "Адаптація до змінених обставин\nоновлені залежності\nNodeJS >= 18.x та js-controller >= 5 обов'язково\nApiClient вилучений (заблокований доступ)",
+        "zh-cn": "适应不断变化的情况\n更新的依赖关系\n节点JS18x和js控制器QQ 需要5个\nApiClient 已删除( 访问被屏蔽)"
+      },
       "0.0.6": {
         "en": "Preparation for transfer to latest",
         "de": "Vorbereitung auf den Transfer",
