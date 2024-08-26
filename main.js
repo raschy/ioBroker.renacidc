@@ -37,7 +37,6 @@ class Renacidc extends utils.Adapter {
 		// Initialize your adapter here
 		this.setState('info.connection', { val: false, ack: true });
 		await this.checkUserData();
-		console.log(this.urlBase);
 		this.interactiveBlacklist = this.config.deviceBlacklist;
 		//
 		if (this.checkUserDataOk) {
@@ -169,10 +168,8 @@ class Renacidc extends utils.Adapter {
 			//
 			const device = this.removeInvalidCharacters(String(stationId));
 			const fullState = device + '.' + entry;
-			//console.log(key, entry, fullState);
 			//
 			const result = this.config.deviceBlacklist.includes(entry);
-			if (result) console.log(result, entry);
 			// Add deleted keys to the blacklist
 			const currentObj = await this.getStateAsync(fullState);
 			if (!result && !currentObj && this.runFirst) {
@@ -186,13 +183,10 @@ class Renacidc extends utils.Adapter {
 			if (!result && key != 'none') {
 				const name = this.makeName(key);
 				const stateroles = this.guessUnit(key);
-				console.log(`[updateData] Device=${device} DP=${fullState} Name=${name} [Key=${key}] with value=${data[key]} and unit=${stateroles.unit}" with role "${stateroles.role}`);
 				await this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
 			} else {
-				console.log('Delete#', fullState);
 				await this.deleteDeviceState(fullState);
 			}
-			console.log('#############');
 		}
 	}
 
@@ -222,7 +216,6 @@ class Renacidc extends utils.Adapter {
 		const blacklistChanged = this.config.deviceBlacklist.localeCompare(interactiveBlacklist);
 		// write into config if changes
 		if (blacklistChanged < 0) {
-			console.log('Blacklist changed');
 			this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
 				if (err) {
 					this.log.error(`[manageBlacklist] ${err}`);
@@ -457,7 +450,6 @@ class Renacidc extends utils.Adapter {
 		// Check if url is not empty
 		if (isNonEmptyString(this.config.base)) {
 			this.urlBase = this.config.base;
-			console.log('**', this.urlBase);
 			if (!this.config.base.startsWith('https')) {
 				this.log.warn('The URL you have entered is not text or empty - please check instance configuration.');
 				this.checkUserDataOk = false;

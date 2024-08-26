@@ -146,8 +146,8 @@
   "native": {
     "username": "",
     "password": "",
-    "pollInterval": 60,
-	"base": "$/aes-192-cbc:80af2c792641e113fdc86da1e3fb364b:09f9c6250e01d808f3856abd5673f1ed45e0aa29adf680980fb1a529607cb3c70bb8f602cea52eef00e37bb9db3964e9",
+    "pollInterval": 90,
+	"base": "$/aes-192-cbc:acc0d932f3fc388d44c681bed59125dc:8427324ba50f421b8a236e32224944bc1522af5744553a52fbcd33fcc4755237f7955460541b16013cfaa19ff77249e8",
     "deviceBlacklist": ""
   },
   "protectedNative": [
