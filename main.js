@@ -8,7 +8,6 @@
 
 // Load your modules here, e.g.:
 const utils = require('@iobroker/adapter-core');
-const api = require('./lib/apiClient.js');
 
 class Renacidc extends utils.Adapter {
 
@@ -27,7 +26,8 @@ class Renacidc extends utils.Adapter {
 		this.runFirst = false;
 		this.interactiveBlacklist = '';
 		this.checkUserDataOk = false;
-		this.executionInterval = 60;
+		this.executionInterval = 160;
+		this.storedToken = '';
 	}
 
 	/**
@@ -37,9 +37,10 @@ class Renacidc extends utils.Adapter {
 		// Initialize your adapter here
 		this.setState('info.connection', { val: false, ack: true });
 		await this.checkUserData();
+		console.log(this.urlBase);
 		this.interactiveBlacklist = this.config.deviceBlacklist;
 		//
-		if (this.checkUserDataOk){
+		if (this.checkUserDataOk) {
 			await this.requestInverterData();
 			//
 			this.updateInterval = this.setInterval(async () => {
@@ -69,24 +70,16 @@ class Renacidc extends utils.Adapter {
 	/**
 	 * requestInverterData()
 	 */
-	async requestInverterData(){
+	async requestInverterData() {
 		this.log.info('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
-			this.log.debug(`UserID: ${userId}`);
-			//
 			const stationIdList = await this.stationList(userId);
-			//this.log.debug(`StationList: ${stationIdList}`);
+			//
 			for (const stationId of stationIdList) {
-				this.log.debug(`StationID: ${stationId}`);
-				const deviceIdList = await this.deviceList(userId, stationId);
-				//this.log.debug(`DeviceIdList: ${deviceIdList}`);
-				for (const inverterSn of deviceIdList) {
-					this.log.debug(`InverterSN: ${inverterSn}`);
-					await this.updateData(await this.inverterData(inverterSn),stationId);
-					//await this.alarmList(userId);
-					//await this.inverterDataHistorical(inverterSn,2,await this.calcDateYesterday());
-				}
+				await this.updateData(await this.devicePowerFlow(stationId), '', stationId);
+				await this.updateDataSub(await this.deviceOverview(stationId),stationId);
+				await this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
 			}
 			this.setState('info.connection', { val: true, ack: true });
 		}
@@ -104,18 +97,15 @@ class Renacidc extends utils.Adapter {
 
 	/**
 	 * save data in ioBroker datapoints
-	 * @param {*} stationId
-	 * @param {*} key
-	 * @param {*} name
+	 * @param {string} device
+	 * @param {string} dp
+	 * @param {string} name
 	 * @param {*} value
-	 * @param {*} role
-	 * @param {*} unit
+	 * @param {string} role
+	 * @param {string} unit
 	 */
-	async persistData(stationId, key, name, value, role, unit) {
-		const dp_Device = this.removeInvalidCharacters(String(stationId));
-		const dp_Value = dp_Device + '.' + this.removeInvalidCharacters(key);
-		//
-		await this.setObjectNotExists(dp_Device, {
+	async persistData(device, dp, name, value, unit, role) {
+		await this.setObjectNotExists(device, {
 			type: 'channel',
 			common: {
 				name: 'Station ID',
@@ -129,7 +119,7 @@ class Renacidc extends utils.Adapter {
 		if (this.isNumber(value)) {
 			value = parseFloat(value);
 			//
-			await this.setObjectNotExistsAsync(dp_Value, {
+			await this.setObjectNotExistsAsync(dp, {
 				type: 'state',
 				common: {
 					name: name,
@@ -137,12 +127,12 @@ class Renacidc extends utils.Adapter {
 					role: role,
 					unit: unit,
 					read: true,
-					write: true,
+					write: false,
 				},
 				native: {},
 			});
 		} else { // or <string>
-			await this.setObjectNotExistsAsync(dp_Value, {
+			await this.setObjectNotExistsAsync(dp, {
 				type: 'state',
 				common: {
 					name: name,
@@ -150,75 +140,77 @@ class Renacidc extends utils.Adapter {
 					role: role,
 					unit: unit,
 					read: true,
-					write: true,
+					write: false,
 				},
 				native: {},
 			});
 		}
 		//
-		//console.log(`[persistData] Device "${dp_Device}"  Key "${key}" with value: "${value}" and unit "${unit}" with role "${role}" as type "{type}"`);
-		await this.setStateAsync(dp_Value, { val: value, ack: true, q: 0x00 });
+		//console.log(`[persistData] Device "${device}"  DP "${dp}" with value: "${value}" and unit "${unit}" with role "${role}" as type "{type}"`);
+		await this.setStateAsync(dp, { val: value, ack: true, q: 0x00 });
 		//
 	}
-
 	/**
 	 * prepare data vor ioBroker
 	 * @param {*} data
 	 * @param {number} stationId
 	 */
-	async updateData(data, stationId) {
+	async updateData(data, folder, stationId) {
 		if (stationId < 1) return;
 		//
 		for (const key in data) {
-			const result = this.config.deviceBlacklist.includes(key);
+			let entry = '';
+			const _key = this.removeInvalidCharacters(key);
+			if (folder){
+				entry = this.capitalizeFirstLetter(this.removeInvalidCharacters(folder)) + '.' + _key;
+			} else {
+				entry = _key;
+			}
+			//
+			const device = this.removeInvalidCharacters(String(stationId));
+			const fullState = device + '.' + entry;
+			//console.log(key, entry, fullState);
+			//
+			const result = this.config.deviceBlacklist.includes(entry);
+			if (result) console.log(result, entry);
 			// Add deleted keys to the blacklist
-			const currentObj = await this.getStateAsync(stationId +'.'+ key);
+			const currentObj = await this.getStateAsync(fullState);
 			if (!result && !currentObj && this.runFirst) {
-				if (this.interactiveBlacklist){
-					this.interactiveBlacklist += ', '+ key;
+				if (this.interactiveBlacklist) {
+					this.interactiveBlacklist += ', ' + entry;
 				} else {
-					this.interactiveBlacklist += key;
+					this.interactiveBlacklist += entry;
 				}
 			}
 			//
 			if (!result && key != 'none') {
-				const name = makeName(key);
-				const stateroles = guessUnit(key);
-				await this.persistData(stationId, key, name, data[key], stateroles.role, stateroles.unit);
+				const name = this.makeName(key);
+				const stateroles = this.guessUnit(key);
+				console.log(`[updateData] Device=${device} DP=${fullState} Name=${name} [Key=${key}] with value=${data[key]} and unit=${stateroles.unit}" with role "${stateroles.role}`);
+				await this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
 			} else {
-				await this.deleteDeviceState(stationId, key);
+				console.log('Delete#', fullState);
+				await this.deleteDeviceState(fullState);
 			}
+			console.log('#############');
 		}
+	}
+
+	/**
+	 *
+	 * @param {*} data
+	 * @param {number} stationId
+	 */
+	async updateDataSub(data, stationId) {
+		if (stationId < 1) return;
 		//
-		// Regex to remove the underscore and process singlewords
-		function makeName(inputString){
-			return inputString.replace(/_/g, ' ').split(' ').map(capitalizeFirstLetter).join(' ');
-		}
-		// Function to convert the first letter of a word into capital letters
-		function capitalizeFirstLetter(word) {
-			return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-		}
-		//	Trying to guess the unit of measurement
-		function guessUnit(inputString){
-			let regex = new RegExp('vol');
-			if (regex.test(inputString)) return { role: 'value.voltage', unit: 'V' };
-			regex = new RegExp('cur');
-			if (regex.test(inputString)) return { role: 'value.current', unit: 'A' };
-			regex = new RegExp('fre');
-			if (regex.test(inputString)) return { role: 'value', unit: 'Hz' };
-			regex = new RegExp('power');
-			if (regex.test(inputString)) return { role: 'value.power', unit: 'W' };
-			regex = new RegExp('energy');
-			if (regex.test(inputString)) return { role: 'value.energy', unit: 'kWh' };
-			regex = new RegExp('capac');
-			if (regex.test(inputString)) return { role: 'value', unit: 'AH' };
-			regex = new RegExp('temp');
-			if (regex.test(inputString)) return { role: 'value.temperature', unit: '°C' };
-			regex = new RegExp('soc');
-			if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
-			regex = new RegExp('soh');
-			if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
-			return { role: 'value', unit: ' ' };
+		//const response = {};
+		for (const property in data) {
+			const rawData = data[property][0];
+			for (const element in rawData) {
+				const res = JSON.parse('{"' + this.removeInvalidCharacters(element) + '":"' + rawData[element] + '"}');
+				await this.updateData(res, property, stationId);
+			}
 		}
 	}
 
@@ -230,6 +222,7 @@ class Renacidc extends utils.Adapter {
 		const blacklistChanged = this.config.deviceBlacklist.localeCompare(interactiveBlacklist);
 		// write into config if changes
 		if (blacklistChanged < 0) {
+			console.log('Blacklist changed');
 			this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
 				if (err) {
 					this.log.error(`[manageBlacklist] ${err}`);
@@ -249,172 +242,196 @@ class Renacidc extends utils.Adapter {
 		}
 	}
 
+
 	/**
-	 * inverterDataHistorical()
-	 * @param {*} inverterSN
+	 * Data from api savings
+	 * @param {number} stationId
 	 * @returns
 	 */
-	async inverterDataHistorical(inverterSN, chartType, chartData) {
-		//console.log(`[inverterDataHistorical] InverterSN: ${inverterSN}`);
-		return api.axios
-			.post(
-				'renac/storage/equChart',			// 2.2.9
-				//'renac/grid/equChart',			// 2.2.10
-				{
-					'inv_sn' : String(inverterSN),
-					'chart_type' : chartType,		// chart_type: 1=Daily, 2,=Weekly, 3=Monthly, 4=Yearly, 5=Total
-					'time' : chartData
-				}
-			)
-			.then((response) => {
-				return response.data.data;
-			})
-			.catch((error) => {
-				this.log.warn(`[inverterDataHistorical] error: ${error.code}`);
-				return Promise.reject(error);
+	async deviceSavings(stationId) {
+		this.log.debug(`[deviceSavings] Station ID: ${stationId}`);
+		const url = this.urlBase + '/api/station/all/savings';
+		const body = {
+			'station_id': stationId
+		};
+
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					accept: 'application/json, text/plain, */*',
+					'Content-Type': 'application/json',
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+					'token': this.storedToken,
+				},
+				body: JSON.stringify(body)
 			});
+			//
+			if (!response.ok) {
+				this.log.error('[deviceOverview] Datenabruf fehlgeschlagen: ' + response.statusText);
+			}
+			const data = await response.json();
+			// @ts-ignore
+			return data.data;
+		} catch (error) {
+			if (error instanceof Error) {
+				this.log.error('[deviceOverview] Fehler:' + error.message);
+			} else {
+				this.log.error('[deviceOverview] Unbekannter Fehler:');
+			}
+		}
 	}
 
 	/**
-	 * alarmList()
-	 * @param {*} userId
+	 * Data from api overview
+	 * @param {number} stationId
 	 * @returns
 	 */
-	async alarmList(userId) {
-		//console.log(`[alarmList] UserID: ${userId}`);
-		return api.axios
-			.post(
-				'api/home/errorList2',
-				{
-					'user_id' : userId,
-					'begin_time' : '2023-08-01',
-					'end_time' : '2023-08-31',
-					'offset' : 0,
-					'rows' :50
-				}
-			)
-			.then((response) => {
-				/*
-				for (const obj of response.data.data.list) {
-					//this.deviceIdList.push(obj.INV_SN);	// DeviceId's
-				}
-				*/
-				return response.data.data;
+	async deviceOverview(stationId) {
+		this.log.debug(`[deviceOverview] Station ID: ${stationId}`);
+		const url = this.urlBase + '/api/station/storage/overview';
 
-			})
-			.catch((error) => {
-				this.log.warn(`[alarmList] error: ${error.code}`);
-				return Promise.reject(error);
-			});
-	}
+		const body = {
+			'station_id': stationId
+		};
 
-	/**
-	 * inverterData()
-	 * @param {*} inverterSn
-	 * @returns data
-	 */
-	async inverterData(inverterSn) {
-		//console.log(`[inverterData] InverterSN: ${inverterSN}`);
-		return api.axios
-			.post(
-				//'renac/grid/equData',		//2.2.5
-				'renac/storage/equData',	//2.2.6
-				{
-					'equ_sn' : String(inverterSn)
-				}
-			)
-			.then((response) => {
-				return response.data.data;
-			})
-			.catch((error) => {
-				this.log.warn(`[inverterData] error: ${error.code}`);
-				return Promise.reject(error);
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					accept: 'application/json, text/plain, */*',
+					'Content-Type': 'application/json',
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+					'token': this.storedToken,
+				},
+				body: JSON.stringify(body)
 			});
+			//
+			if (!response.ok) {
+				this.log.error('[deviceOverview] Datenabruf fehlgeschlagen: ' + response.statusText);
+			}
+			const data = await response.json();
+			// @ts-ignore
+			return data.data;
+		} catch (error) {
+			if (error instanceof Error) {
+				this.log.error('[deviceOverview] Fehler:' + error.message);
+			} else {
+				this.log.error('[deviceOverview] Unbekannter Fehler:');
+			}
+		}
 	}
 
 	/**
 	 * deviceList()
-	 * @param {*} userId
-	 * @param {*} stationId
+	 * @param {number} stationId
 	 * @returns
 	 */
-	async deviceList(userId, stationId) {
-		//console.log(`[deviceList] UserID: ${userId} StationID: ${stationId}`);
-		return api.axios
-			.post(
-				'bg/equList',
-				{
-					'user_id' : userId,
-					'station_id' : stationId,
-					'offset': 0,
-					'rows':10
-				}
-			)
-			.then((response) => {
-				const deviceIdList =[];
-				for (const obj of response.data.data.list) {
-					deviceIdList.push(obj.INV_SN);	// DeviceId's
-				}
-				return deviceIdList;
-			})
-			.catch((error) => {
-				this.log.warn(`[deviceList] error: ${error.code}`);
-				return Promise.reject(error);
+	async devicePowerFlow(stationId) {
+		this.log.debug(`[devicePowerFlow] Station ID: ${stationId}`);
+		const url = this.urlBase + '/api/home/station/powerFlow';
+		const params = new URLSearchParams();
+		params.append('station_id', String(stationId));
+
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					accept: 'application/json, text/plain, */*',
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+					'token': this.storedToken,
+				},
+				body: params.toString()
 			});
+			//
+			if (!response.ok) {
+				this.log.error('[devicePowerFlow] Datenabruf fehlgeschlagen: ' + response.statusText);
+			}
+			const data = await response.json();
+			// @ts-ignore
+			return data.data;
+		} catch (error) {
+			if (error instanceof Error) {
+				this.log.error('[devicePowerFlow] Fehler:' + error.message);
+			} else {
+				this.log.error('[devicePowerFlow] Unbekannter Fehler:');
+			}
+		}
 	}
 
 	/**
 	 * stationList()
-	 * @param {*} userId
+	 * @param {number} userId
 	 * @returns stationIdList[]
 	 */
 	async stationList(userId) {
-		//console.log(`[stationList] UserID: ${userId}`);
-		return api.axios
-			.post(
-				'api/station/list',
-				{
-					'user_id' : userId,
-					'offset': 0,
-					'rows':10
-				}
-			)
-			.then((response) => {
-				const stationIdList =[];
-				for (const obj of response.data.data.list) {
-					stationIdList.push(obj.station_id);
-				}
-				return stationIdList;
-			})
-			.catch((error) => {
-				this.log.warn(`[stationList] error: ${error.code}`);
-				return Promise.reject(error);
+		this.log.debug(`[stationList] User ID: ${userId}`);
+		const url = this.urlBase + '/api/station/list';
+
+		const body = {
+			'user_id': userId,
+			'offset': 0,
+			'rows': 10
+		};
+
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					accept: 'application/json',
+					'Content-Type': 'application/json',
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+					'token': this.storedToken,
+				},
+				body: JSON.stringify(body)
 			});
+			//
+			if (!response.ok) {
+				this.log.error('[stationList] Datenabruf fehlgeschlagen: ' + response.statusText);
+			}
+			const data = await response.json();
+			// @ts-ignore
+			const stationIdList = data.data.list.map((item) => item.station_id);
+			return stationIdList;
+		} catch (error) {
+			if (error instanceof Error) {
+				this.log.error('[stationList] Fehler:' + error.message);
+			} else {
+				this.log.error('[stationList] Unbekannter Fehler:');
+			}
+		}
 	}
 
 	/**
 	 * initializeStation()
 	 * @returns userId
+	 * @token
 	 */
 	async initializeStation() {
-		//console.log(`[initializeStation]`);
-		return api.axios
-			.post(
-				'api/user/login',
-				{
-					'login_name' : this.config.username,
-					'pwd': this.config.password
-				}
-			)
-			.then((response) => {
-				return response.data.data;
-			})
-			.catch((error) => {
-				this.log.error(`[initializeStation] error: ${error.message}`);
-				return Promise.reject(error);
-			});
+		this.log.debug('[initializeStation]');
+		const url = this.urlBase + '/api/user/login';
+		//
+		const body = {
+			'login_name': this.config.username,
+			'pwd': this.config.password
+		};
+		//
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+			},
+			body: JSON.stringify(body)
+		});
+		const data = await response.json();
+		// @ts-ignore
+		this.storedToken = data.user.token;
+		// @ts-ignore
+		return data.data;
 	}
-	// Use the specified coordinates from the configuration
 	//
 	/**
 	 * checkUserData()
@@ -438,16 +455,15 @@ class Renacidc extends utils.Adapter {
 		}
 		// __________________
 		// Check if url is not empty
-		/*
-		if (!isValidInput(this.config.url, 17)) {
-			this.log.warn('The URL you have entered is not text or empty - please check instance configuration.');
-			this.checkUserDataOk = false;
-			return;
+		if (isNonEmptyString(this.config.base)) {
+			this.urlBase = this.config.base;
+			console.log('**', this.urlBase);
+			if (!this.config.base.startsWith('https')) {
+				this.log.warn('The URL you have entered is not text or empty - please check instance configuration.');
+				this.checkUserDataOk = false;
+				return;
+			}
 		}
-		if (!this.config.url.endsWith('/')){
-			this.config.url + '/';
-		}
-		*/
 		// __________________
 		// check if the sync time is a number, if not, the string is parsed to a number
 		if (isNaN(this.config.pollInterval) || this.config.pollInterval < 60) {
@@ -475,13 +491,10 @@ class Renacidc extends utils.Adapter {
 
 	/**
 	 * Deletes states
-	 * @param {number} stationId
-	 * @param {*} stateName
+	 * @param {string} stateToDelete
 	 */
-	async deleteDeviceState(stationId, stateName) {
+	async deleteDeviceState(stateToDelete) {
 		//const stateToDelete = stationId + '.' + stateName;
-		const stateToDelete = this.removeInvalidCharacters(String(stationId)) + '.' + this.removeInvalidCharacters(stateName);
-
 		try {
 			// Verify that associated object exists
 			const currentObj = await this.getStateAsync(stateToDelete);
@@ -489,7 +502,8 @@ class Renacidc extends utils.Adapter {
 				await this.delObjectAsync(stateToDelete);
 				this.log.debug(`[deleteDeviceState] Device ID: (${stateToDelete})`);
 			} else {
-				const currentState = await this.getStateAsync(stateName);
+				//const currentState = await this.getStateAsync(stateName);
+				const currentState = await this.getStateAsync(stateToDelete);
 				if (currentState) {
 					await this.deleteStateAsync(stateToDelete);
 					this.log.debug(`[deleteDeviceState] State: (${stateToDelete})`);
@@ -524,6 +538,51 @@ class Renacidc extends utils.Adapter {
 		const regex = new RegExp(regexPattern, 'gu');
 		return inputString.replace(regex, '_');
 	}
+	//
+	// Regex to remove the underscore and process singlewords
+	makeName(inputString) {
+		return inputString.replace(/_/g, ' ').split(' ').map(this.capitalizeFirstLetter).join(' ');
+	}
+
+	// Function to convert the first letter of a word into capital letters
+	capitalizeFirstLetter(word) {
+		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+	}
+
+	//	Trying to guess the unit of measurement
+	guessUnit(inputString) {
+		inputString = inputString.toLowerCase();
+		let regex = new RegExp('vol');
+		if (regex.test(inputString)) return { role: 'value.voltage', unit: 'V' };
+		regex = new RegExp('cur');
+		if (regex.test(inputString)) return { role: 'value.current', unit: 'A' };
+		regex = new RegExp('fre');
+		if (regex.test(inputString)) return { role: 'value', unit: 'Hz' };
+		regex = new RegExp('power');
+		if (regex.test(inputString)) return { role: 'value.power', unit: 'W' };
+		regex = new RegExp('energy');
+		if (regex.test(inputString)) return { role: 'value.energy', unit: 'kWh' };
+		regex = new RegExp('capac');
+		if (regex.test(inputString)) return { role: 'value', unit: '%' }; //AH
+		regex = new RegExp('temp');
+		if (regex.test(inputString)) return { role: 'value.temperature', unit: '°C' };
+		regex = new RegExp('soc');
+		if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
+		regex = new RegExp('soh');
+		if (regex.test(inputString)) return { role: 'value.fill', unit: '%' };
+		regex = new RegExp('co2');
+		if (regex.test(inputString)) return { role: 'value.fill', unit: 'kg' };
+		regex = new RegExp('so2');
+		if (regex.test(inputString)) return { role: 'value.fill', unit: 'kg' };
+		regex = new RegExp('charge');
+		if (regex.test(inputString)) return { role: 'value.energy', unit: 'kWh' };
+		regex = new RegExp('meter');
+		if (regex.test(inputString)) return { role: 'value.energy', unit: 'kWh' };
+		regex = new RegExp('profit');
+		if (regex.test(inputString)) return { role: 'value', unit: '€' };
+		return { role: 'value', unit: ' ' };
+	}
+
 }
 
 if (require.main !== module) {

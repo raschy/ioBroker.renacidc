@@ -134,7 +134,7 @@
     },
     "dependencies": [
       {
-        "js-controller": ">=4.0.24"
+        "js-controller": ">=5.0.19"
       }
     ],
     "globalDependencies": [
@@ -147,13 +147,16 @@
     "username": "",
     "password": "",
     "pollInterval": 60,
+	"base": "$/aes-192-cbc:80af2c792641e113fdc86da1e3fb364b:09f9c6250e01d808f3856abd5673f1ed45e0aa29adf680980fb1a529607cb3c70bb8f602cea52eef00e37bb9db3964e9",
     "deviceBlacklist": ""
   },
   "protectedNative": [
-    "password"
+    "password",
+	"base"
   ],
   "encryptedNative": [
-    "password"
+    "password",
+	"base"
   ],
   "objects": [],
   "instanceObjects": [
