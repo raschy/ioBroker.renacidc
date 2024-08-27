@@ -11,7 +11,8 @@
   "keywords": [
     "Renac",
     "Inverter",
-    "Solar"
+    "Solar",
+	"ioBroker"
   ],
   "repository": {
     "type": "git",

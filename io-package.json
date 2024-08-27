@@ -54,45 +54,6 @@
         "pl": "Przykłady",
         "uk": "Розгортання на npm",
         "zh-cn": "页:1"
-      },
-      "0.0.3": {
-        "en": "some code clean-up",
-        "de": "einige code-reinigung",
-        "ru": "некоторый код очистить",
-        "pt": "algum código de limpeza",
-        "nl": "een code schoonmaken",
-        "fr": "de nettoyage de code",
-        "it": "qualche codice di pulizia",
-        "es": "algo de limpieza de código",
-        "pl": "niektóre kody czyściły",
-        "uk": "деякий код очищення",
-        "zh-cn": "一些守则的清洁"
-      },
-      "0.0.2": {
-        "en": "initial release",
-        "de": "Erstveröffentlichung",
-        "ru": "начальный выпуск",
-        "pt": "lançamento inicial",
-        "nl": "Eerste uitgave",
-        "fr": "initial release",
-        "it": "Versione iniziale",
-        "es": "Versión inicial",
-        "pl": "pierwsze wydanie",
-        "uk": "початковий реліз",
-        "zh-cn": "初步释放"
-      },
-      "0.0.1": {
-        "en": "initial release",
-        "de": "Erstveröffentlichung",
-        "ru": "Начальная версия",
-        "pt": "lançamento inicial",
-        "nl": "Eerste uitgave",
-        "fr": "Première version",
-        "it": "Versione iniziale",
-        "es": "Versión inicial",
-        "pl": "Pierwsze wydanie",
-        "uk": "Початкова версія",
-        "zh-cn": "首次出版"
       }
     },
     "titleLang": {
