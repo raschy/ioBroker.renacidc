@@ -129,15 +129,18 @@
       "Inverter",
       "Renac"
     ],
-    "license": "MIT",
+	"licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "renacidc.png",
-    "enabled": true,
+    "enabled": false,
     "extIcon": "https://raw.githubusercontent.com/raschy/ioBroker.renacidc/main/admin/renacidc.png",
     "readme": "https://github.com/raschy/ioBroker.renacidc/blob/main/README.md",
     "loglevel": "info",
     "mode": "daemon",
+	"tier": 2,
     "type": "energy",
     "compact": true,
     "connectionType": "cloud",
