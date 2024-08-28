@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "news": {
+      "0.1.1": {
+        "en": "Fixing repository checker issues\nsome refaktoring",
+        "de": "Probleme mit dem Repository Checker behoben\nein refaktor",
+        "ru": "Fixing репозиторий\nнекоторые рефакторинг",
+        "pt": "Corrigindo problemas do verificador do repositório\nalguns refaktoring",
+        "nl": "Problemen met repositorychecker repareren\nwat refaktoring",
+        "fr": "Correction des problèmes de vérification du dépôt\nquelques retouches",
+        "it": "Risolvere i problemi del repository checker\nalcuni rifaktoring",
+        "es": "Arreglar los problemas de control de repositorios\nalgunos refaktoring",
+        "pl": "Ustawienie problemów z sprawdzaniem repozytorium\nniektóre refabrykowanie",
+        "uk": "Виправлення репозиторійних питань перевірки\nдеякі редактори",
+        "zh-cn": "修复仓库检查器问题\n{\\fn黑体\\fs22\\bord1\\shad0\\3ahbe\\4ah00\\fscx67\\fscy66\\2chffffff\\3ch808080}一些反射器"
+      },
       "0.1.0": {
         "en": "Adaptation to changed circumstances \nupdated dependencies\nNodeJS >= 18.x and js-controller >= 5 is required\nApiClient removed (access blocked)",
         "de": "Anpassung an veränderte Umstände\naktualisierte abhängigkeiten\nNodeJS >= 18.x und js-Controller >= 5 ist erforderlich\nApiClient entfernt (Zugriff blockiert)",

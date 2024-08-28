@@ -1,6 +1,6 @@
 {
   "name": "iobroker.renacidc",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reading the data from solar inverter",
   "author": {
     "name": "raschy",
@@ -12,7 +12,7 @@
     "Renac",
     "Inverter",
     "Solar",
-	"ioBroker"
+    "ioBroker"
   ],
   "repository": {
     "type": "git",

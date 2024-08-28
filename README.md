@@ -28,7 +28,7 @@ For further information on the product range, please visit the official website:
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.1.1 (2024-08-28)
 * (raschy) Fixing repository checker issues
 * (raschy) some refaktoring
 
