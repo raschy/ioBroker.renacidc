@@ -27,7 +27,6 @@ class Renacidc extends utils.Adapter {
 		this.interactiveBlacklist = '';
 		this.checkUserDataOk = false;
 		this.executionInterval = 160;
-		this.storedToken = '';
 	}
 
 	/**
@@ -76,18 +75,16 @@ class Renacidc extends utils.Adapter {
 			const stationIdList = await this.stationList(userId);
 			//
 			for (const stationId of stationIdList) {
-				await this.updateData(await this.devicePowerFlow(stationId), '', stationId);
-				await this.updateDataSub(await this.deviceOverview(stationId),stationId);
-				await this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
+				this.updateData(await this.devicePowerFlow(stationId), '', stationId);
+				this.updateDataSub(await this.deviceOverview(stationId), stationId);
+				this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
 			}
 			this.setState('info.connection', { val: true, ack: true });
 		}
 		catch (error) {
 			this.setState('info.connection', { val: false, ack: true });
-			this.log.debug(`[requestInverterData] catch ${JSON.stringify(error)}`);
-		}
-		finally {
-			this.log.debug('[requestInverterData] finished');
+			this.log.error(`[requestInverterData] catch: ${error.message}`);
+			this.log.debug(`[requestInverterData] catch: ${error.stack}`);
 		}
 		this.manageBlacklist(this.interactiveBlacklist);
 		this.runFirst = true;
@@ -146,21 +143,22 @@ class Renacidc extends utils.Adapter {
 		}
 		//
 		//console.log(`[persistData] Device "${device}"  DP "${dp}" with value: "${value}" and unit "${unit}" with role "${role}" as type "{type}"`);
-		await this.setStateAsync(dp, { val: value, ack: true, q: 0x00 });
+		await this.setState(dp, { val: value, ack: true, q: 0x00 });
 		//
 	}
 	/**
 	 * prepare data vor ioBroker
-	 * @param {*} data
+	 * @param {object} data
+	 * @param {string} folder
 	 * @param {number} stationId
 	 */
-	async updateData(data, folder, stationId) {
-		if (stationId < 1) return;
+	updateData(data, folder, stationId) {
+		if (!data || stationId < 1) return;
 		//
 		for (const key in data) {
 			let entry = '';
 			const _key = this.removeInvalidCharacters(key);
-			if (folder){
+			if (folder) {
 				entry = this.capitalizeFirstLetter(this.removeInvalidCharacters(folder)) + '.' + _key;
 			} else {
 				entry = _key;
@@ -171,7 +169,7 @@ class Renacidc extends utils.Adapter {
 			//
 			const result = this.config.deviceBlacklist.includes(entry);
 			// Add deleted keys to the blacklist
-			const currentObj = await this.getStateAsync(fullState);
+			const currentObj = this.getStateAsync(fullState);
 			if (!result && !currentObj && this.runFirst) {
 				if (this.interactiveBlacklist) {
 					this.interactiveBlacklist += ', ' + entry;
@@ -183,27 +181,26 @@ class Renacidc extends utils.Adapter {
 			if (!result && key != 'none') {
 				const name = this.makeName(key);
 				const stateroles = this.guessUnit(key);
-				await this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
+				this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
 			} else {
-				await this.deleteDeviceState(fullState);
+				this.deleteDeviceState(fullState);
 			}
 		}
 	}
 
 	/**
 	 *
-	 * @param {*} data
+	 * @param {object} data
 	 * @param {number} stationId
 	 */
-	async updateDataSub(data, stationId) {
+	updateDataSub(data, stationId) {
 		if (stationId < 1) return;
 		//
-		//const response = {};
 		for (const property in data) {
 			const rawData = data[property][0];
 			for (const element in rawData) {
 				const res = JSON.parse('{"' + this.removeInvalidCharacters(element) + '":"' + rawData[element] + '"}');
-				await this.updateData(res, property, stationId);
+				this.updateData(res, property, stationId);
 			}
 		}
 	}
@@ -235,173 +232,152 @@ class Renacidc extends utils.Adapter {
 		}
 	}
 
-
 	/**
-	 * Data from api savings
-	 * @param {number} stationId
-	 * @returns
-	 */
-	async deviceSavings(stationId) {
+		 * Data from api 'savings'
+		 * @param {number} stationId
+		 * @returns {Promise<object>} data
+		 */
+	deviceSavings(stationId) {
 		this.log.debug(`[deviceSavings] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/station/all/savings';
+		//
 		const body = {
 			'station_id': stationId
 		};
-
-		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					accept: 'application/json, text/plain, */*',
-					'Content-Type': 'application/json',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-					'token': this.storedToken,
-				},
-				body: JSON.stringify(body)
-			});
-			//
-			if (!response.ok) {
-				this.log.error('[deviceOverview] Datenabruf fehlgeschlagen: ' + response.statusText);
-			}
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[deviceSavings] failed to retrieve data');
 			const data = await response.json();
 			// @ts-ignore
-			return data.data;
-		} catch (error) {
-			if (error instanceof Error) {
-				this.log.error('[deviceOverview] Fehler:' + error.message);
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data;
 			} else {
-				this.log.error('[deviceOverview] Unbekannter Fehler:');
+				throw new Error('[deviceSavings] incorrect data received');
 			}
-		}
+		});
 	}
 
 	/**
-	 * Data from api overview
+	 * Data from api 'overview'
 	 * @param {number} stationId
-	 * @returns
+	 * @returns {Promise<object>} data
 	 */
-	async deviceOverview(stationId) {
+	deviceOverview(stationId) {
 		this.log.debug(`[deviceOverview] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/station/storage/overview';
-
+		//
 		const body = {
 			'station_id': stationId
 		};
-
-		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					accept: 'application/json, text/plain, */*',
-					'Content-Type': 'application/json',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-					'token': this.storedToken,
-				},
-				body: JSON.stringify(body)
-			});
-			//
-			if (!response.ok) {
-				this.log.error('[deviceOverview] Datenabruf fehlgeschlagen: ' + response.statusText);
-			}
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[deviceOverview] failed to retrieve data');
 			const data = await response.json();
 			// @ts-ignore
-			return data.data;
-		} catch (error) {
-			if (error instanceof Error) {
-				this.log.error('[deviceOverview] Fehler:' + error.message);
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data;
 			} else {
-				this.log.error('[deviceOverview] Unbekannter Fehler:');
+				throw new Error('[deviceOverview] incorrect data received');
 			}
-		}
+		});
 	}
 
 	/**
-	 * deviceList()
+	 * Data from api 'powerFlow'
 	 * @param {number} stationId
-	 * @returns
+	 * @returns {Promise<object>} data
 	 */
-	async devicePowerFlow(stationId) {
+	devicePowerFlow(stationId) {
 		this.log.debug(`[devicePowerFlow] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/home/station/powerFlow';
 		const params = new URLSearchParams();
 		params.append('station_id', String(stationId));
-
-		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					accept: 'application/json, text/plain, */*',
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-					'token': this.storedToken,
-				},
-				body: params.toString()
-			});
-			//
-			if (!response.ok) {
-				this.log.error('[devicePowerFlow] Datenabruf fehlgeschlagen: ' + response.statusText);
-			}
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json, text/plain, */*',
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: params.toString()
+		}).then(async response => {
+			if (!response.ok) throw new Error('[devicePowerFlow] failed to retrieve data');
 			const data = await response.json();
 			// @ts-ignore
-			return data.data;
-		} catch (error) {
-			if (error instanceof Error) {
-				this.log.error('[devicePowerFlow] Fehler:' + error.message);
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data;
 			} else {
-				this.log.error('[devicePowerFlow] Unbekannter Fehler:');
+				throw new Error('[devicePowerFlow] incorrect data received');
 			}
-		}
+		});
 	}
 
 	/**
-	 * stationList()
+	 * stationList[]
 	 * @param {number} userId
-	 * @returns stationIdList[]
+	 * @returns {Promise<array>} stationIdList
 	 */
-	async stationList(userId) {
+	stationList(userId) {
 		this.log.debug(`[stationList] User ID: ${userId}`);
 		const url = this.urlBase + '/api/station/list';
-
+		//
 		const body = {
 			'user_id': userId,
 			'offset': 0,
 			'rows': 10
 		};
-
-		try {
-			const response = await fetch(url, {
-				method: 'POST',
-				headers: {
-					accept: 'application/json',
-					'Content-Type': 'application/json',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-					'token': this.storedToken,
-				},
-				body: JSON.stringify(body)
-			});
-			//
-			if (!response.ok) {
-				this.log.error('[stationList] Datenabruf fehlgeschlagen: ' + response.statusText);
-			}
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[stationList] failed to retrieve data');
 			const data = await response.json();
 			// @ts-ignore
-			const stationIdList = data.data.list.map((item) => item.station_id);
-			return stationIdList;
-		} catch (error) {
-			if (error instanceof Error) {
-				this.log.error('[stationList] Fehler:' + error.message);
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data.list.map((item) => item.station_id);
 			} else {
-				this.log.error('[stationList] Unbekannter Fehler:');
+				throw new Error('[stationList] incorrect data received');
 			}
-		}
+		});
 	}
 
 	/**
-	 * initializeStation()
-	 * @returns userId
+	 * initializeStation (get UserID & Token)
+	 * @returns {Promise<number>} userId
 	 * @token
 	 */
-	async initializeStation() {
+	initializeStation() {
 		this.log.debug('[initializeStation]');
 		const url = this.urlBase + '/api/user/login';
 		//
@@ -410,7 +386,7 @@ class Renacidc extends utils.Adapter {
 			'pwd': this.config.password
 		};
 		//
-		const response = await fetch(url, {
+		return fetch(url, {
 			method: 'POST',
 			headers: {
 				accept: 'application/json',
@@ -418,12 +394,19 @@ class Renacidc extends utils.Adapter {
 				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 			},
 			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[initializeStation] failed to retrieve data');
+			const data = await response.json();
+			// @ts-ignore
+			if (data.code == 1) {
+				// @ts-ignore
+				this.token = data.user.token;
+				// @ts-ignore
+				return data.data;
+			} else {
+				throw new Error('[initializeStation] incorrect data received');
+			}
 		});
-		const data = await response.json();
-		// @ts-ignore
-		this.storedToken = data.user.token;
-		// @ts-ignore
-		return data.data;
 	}
 	//
 	/**
@@ -448,13 +431,12 @@ class Renacidc extends utils.Adapter {
 		}
 		// __________________
 		// Check if url is not empty
-		if (isNonEmptyString(this.config.base)) {
+		if (!isNonEmptyString(this.config.base) || !this.config.base.startsWith('https')) {
+			this.log.warn('The URL you have entered is not ok or empty - please check instance configuration.');
+			this.checkUserDataOk = false;
+			return;
+		} else {
 			this.urlBase = this.config.base;
-			if (!this.config.base.startsWith('https')) {
-				this.log.warn('The URL you have entered is not text or empty - please check instance configuration.');
-				this.checkUserDataOk = false;
-				return;
-			}
 		}
 		// __________________
 		// check if the sync time is a number, if not, the string is parsed to a number
@@ -463,8 +445,8 @@ class Renacidc extends utils.Adapter {
 		} else {
 			this.executionInterval = this.config.pollInterval;
 		}
+		// __________________
 		this.log.info(`Retrieving data from the inverter will be done every ${this.executionInterval} seconds`);
-		//
 		this.log.debug(`checkUserData is ready`);
 		this.checkUserDataOk = true;
 		return;
@@ -473,12 +455,6 @@ class Renacidc extends utils.Adapter {
 			// Check whether input is a string and whether not empty
 			return typeof input === 'string' && input.trim() !== '';
 		}
-		/*
-		function isValidInput(input, minLength) {
-			// Check whether input is a string and whether the length is greater than or equal to the minimum length.
-			return typeof input === 'string' && input.length >= minLength;
-		}
-		*/
 	}
 
 	/**
@@ -506,20 +482,6 @@ class Renacidc extends utils.Adapter {
 		}
 	}
 
-	/**
-	 * calcDateYesterday()
-	 * @returns
-	 */
-	async calcDateYesterday() {
-		const today = new Date();
-		const yesterday = new Date(today);
-		yesterday.setDate(today.getDate() - 1);
-		// Convert the date into 'yyyy-mm-dd' format
-		const year = yesterday.getFullYear();
-		const month = (yesterday.getMonth() + 1).toString().padStart(2, '0');
-		const day = yesterday.getDate().toString().padStart(2, '0');
-		return year + '-' + month + '-' + day;
-	}
 	// Helper
 	isNumber(n) {
 		return !isNaN(parseFloat(n)) && !isNaN(n - 0);

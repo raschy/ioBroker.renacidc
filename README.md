@@ -30,6 +30,7 @@ For further information on the product range, please visit the official website:
 -->
 ### **WORK IN PROGRESS**
 * (raschy) Fixing repository checker issues
+* (raschy) some refaktoring
 
 ### 0.1.0 (2024-08-26)
 * (raschy) Adaptation to changed circumstances 
