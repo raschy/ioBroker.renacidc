@@ -75,9 +75,9 @@ class Renacidc extends utils.Adapter {
 			const stationIdList = await this.stationList(userId);
 			//
 			for (const stationId of stationIdList) {
-				this.updateData(await this.devicePowerFlow(stationId), '', stationId);
-				this.updateDataSub(await this.deviceOverview(stationId), stationId);
-				this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
+				await this.updateData(await this.devicePowerFlow(stationId), '', stationId);
+				await this.updateDataSub(await this.deviceOverview(stationId), stationId);
+				await this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
 			}
 			this.setState('info.connection', { val: true, ack: true });
 		}
@@ -152,7 +152,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {string} folder
 	 * @param {number} stationId
 	 */
-	updateData(data, folder, stationId) {
+	async updateData(data, folder, stationId) {
 		if (!data || stationId < 1) return;
 		//
 		for (const key in data) {
@@ -169,7 +169,7 @@ class Renacidc extends utils.Adapter {
 			//
 			const result = this.config.deviceBlacklist.includes(entry);
 			// Add deleted keys to the blacklist
-			const currentObj = this.getStateAsync(fullState);
+			const currentObj = await this.getStateAsync(fullState);
 			if (!result && !currentObj && this.runFirst) {
 				if (this.interactiveBlacklist) {
 					this.interactiveBlacklist += ', ' + entry;
@@ -178,12 +178,13 @@ class Renacidc extends utils.Adapter {
 				}
 			}
 			//
+			if (result) console.log(result, key, fullState);
 			if (!result && key != 'none') {
 				const name = this.makeName(key);
 				const stateroles = this.guessUnit(key);
-				this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
+				await this.persistData(device, fullState, name, data[key], stateroles.unit, stateroles.role);
 			} else {
-				this.deleteDeviceState(fullState);
+				await this.deleteDeviceState(fullState);
 			}
 		}
 	}
@@ -193,7 +194,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {object} data
 	 * @param {number} stationId
 	 */
-	updateDataSub(data, stationId) {
+	async updateDataSub(data, stationId) {
 		if (stationId < 1) return;
 		//
 		for (const property in data) {
@@ -210,14 +211,17 @@ class Renacidc extends utils.Adapter {
 	 * @param {*} interactiveBlacklist
 	 */
 	async manageBlacklist(interactiveBlacklist) {
+		console.log(`[manageBlacklist] ${interactiveBlacklist}`);
 		const blacklistChanged = this.config.deviceBlacklist.localeCompare(interactiveBlacklist);
 		// write into config if changes
 		if (blacklistChanged < 0) {
+			console.log('[manageBlacklist] changed');
 			this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
 				if (err) {
 					this.log.error(`[manageBlacklist] ${err}`);
 				} else {
 					if (obj) {
+						console.log('xx', obj._id);
 						obj.native.deviceBlacklist = interactiveBlacklist; // modify object
 						this.setForeignObject(obj._id, obj, (err) => {
 							if (err) {
@@ -462,18 +466,16 @@ class Renacidc extends utils.Adapter {
 	 * @param {string} stateToDelete
 	 */
 	async deleteDeviceState(stateToDelete) {
-		//const stateToDelete = stationId + '.' + stateName;
 		try {
 			// Verify that associated object exists
 			const currentObj = await this.getStateAsync(stateToDelete);
 			if (currentObj) {
 				await this.delObjectAsync(stateToDelete);
-				this.log.debug(`[deleteDeviceState] Device ID: (${stateToDelete})`);
+				this.log.debug(`[deleteDeviceState] Object: (${stateToDelete})`);
 			} else {
-				//const currentState = await this.getStateAsync(stateName);
 				const currentState = await this.getStateAsync(stateToDelete);
 				if (currentState) {
-					await this.deleteStateAsync(stateToDelete);
+					this.delObject(stateToDelete);
 					this.log.debug(`[deleteDeviceState] State: (${stateToDelete})`);
 				}
 			}
