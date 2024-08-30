@@ -169,18 +169,18 @@
       },
       "native": {}
     },
-	{
-		"_id": "info.lastUpdate",
-		"type": "state",
-		"common": {
-		  "role": "date.end",
-		  "name": "Last update",
-		  "type": "number",
-		  "read": true,
-		  "write": false,
-		  "def": 0
-		},
-		"native": {}
-	  }
+    {
+      "_id": "info.lastUpdate",
+      "type": "state",
+      "common": {
+        "role": "date.end",
+        "name": "Last update",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    }
   ]
 }
