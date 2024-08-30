@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "news": {
+      "0.1.2": {
+        "en": "Inverter details addet",
+        "de": "Inverter Details Addet",
+        "ru": "Инверторные детали",
+        "pt": "Adicionar detalhes do inversor",
+        "nl": "Inverter details addet",
+        "fr": "Addet de détails de l'onduleur",
+        "it": "Addetto dettagli inverter",
+        "es": "Inverter detalles addet",
+        "pl": "Informacje o inwerterze",
+        "uk": "Інверторні деталі",
+        "zh-cn": "反转细节添加器"
+      },
       "0.1.1": {
         "en": "Fixing repository checker issues\nsome refaktoring",
         "de": "Probleme mit dem Repository Checker behoben\nein refaktor",
