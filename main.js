@@ -26,7 +26,7 @@ class Renacidc extends utils.Adapter {
 		this.runFirst = false;
 		this.interactiveBlacklist = '';
 		this.checkUserDataOk = false;
-		this.executionInterval = 160;
+		this.executionInterval = 90;
 	}
 
 	/**
@@ -72,19 +72,25 @@ class Renacidc extends utils.Adapter {
 		this.log.info('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
-			const stationIdList = await this.stationList(userId);
 			//
+			const stationIdList = await this.stationList(userId);
 			for (const stationId of stationIdList) {
 				await this.updateData(await this.devicePowerFlow(stationId), '', stationId);
 				await this.updateDataSub(await this.deviceOverview(stationId), stationId);
 				await this.updateData(await this.deviceSavings(stationId), 'saving', stationId);
+				//
+				const deviceIdList = await this.deviceEqulist(userId, stationId);
+				for (const deviceId of deviceIdList) {
+					await this.updateData(await this.deviceInvDetail(deviceId, this.dateToday()), 'inverter', stationId);
+				}
 			}
+			this.setState('info.lastUpdate', { val: Date.now(), ack: true });
 			this.setState('info.connection', { val: true, ack: true });
 		}
 		catch (error) {
 			this.setState('info.connection', { val: false, ack: true });
-			this.log.error(`[requestInverterData] catch: ${error.message}`);
-			this.log.debug(`[requestInverterData] catch: ${error.stack}`);
+			this.log.error(`[requestInverterData] catch: message ${error.message}`);
+			this.log.debug(`[requestInverterData] catch: stack ${error.stack}`);
 		}
 		this.manageBlacklist(this.interactiveBlacklist);
 		this.runFirst = true;
@@ -178,7 +184,6 @@ class Renacidc extends utils.Adapter {
 				}
 			}
 			//
-			if (result) console.log(result, key, fullState);
 			if (!result && key != 'none') {
 				const name = this.makeName(key);
 				const stateroles = this.guessUnit(key);
@@ -190,7 +195,7 @@ class Renacidc extends utils.Adapter {
 	}
 
 	/**
-	 *
+	 * prepare data vor ioBroker
 	 * @param {object} data
 	 * @param {number} stationId
 	 */
@@ -211,17 +216,15 @@ class Renacidc extends utils.Adapter {
 	 * @param {*} interactiveBlacklist
 	 */
 	async manageBlacklist(interactiveBlacklist) {
-		console.log(`[manageBlacklist] ${interactiveBlacklist}`);
 		const blacklistChanged = this.config.deviceBlacklist.localeCompare(interactiveBlacklist);
 		// write into config if changes
 		if (blacklistChanged < 0) {
-			console.log('[manageBlacklist] changed');
+			this.log.debug(`[manageBlacklist] ${interactiveBlacklist}`);
 			this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
 				if (err) {
 					this.log.error(`[manageBlacklist] ${err}`);
 				} else {
 					if (obj) {
-						console.log('xx', obj._id);
 						obj.native.deviceBlacklist = interactiveBlacklist; // modify object
 						this.setForeignObject(obj._id, obj, (err) => {
 							if (err) {
@@ -237,11 +240,91 @@ class Renacidc extends utils.Adapter {
 	}
 
 	/**
-		 * Data from api 'savings'
-		 * @param {number} stationId
-		 * @returns {Promise<object>} data
-		 */
-	deviceSavings(stationId) {
+	 * Data from api 'detail'
+	 * @param {number} equSn
+	 * @param {String} today
+	 * @returns {Promise<object>} data
+	 */
+	async deviceInvDetail(equSn, today) {
+		this.log.debug(`[deviceInvDetail] Equ SN: ${equSn} Datum: ${today}`);
+		const url = this.urlBase + '/bg/inv/detail';
+		//
+		const body = {
+			'equ_sn': equSn,
+			offset: 0,
+			rows: 10,
+			time: today
+		};
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[deviceInvDetail] failed to retrieve data');
+			const data = await response.json();
+			// @ts-ignore
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data.im;
+			} else {
+				throw new Error('[deviceInvDetail] incorrect data received');
+			}
+		});
+	}
+
+	/**
+	 * Data from api 'equList'
+	 * @param {number} userId
+	 * @param {number} stationId
+	 * @returns {Promise<array>} DeviceIdList
+	 */
+	async deviceEqulist(userId, stationId) {
+		this.log.debug(`[deviceEqulist] User ID: ${userId} Station ID: ${stationId}`);
+		const url = this.urlBase + '/bg/equList';
+		//
+		const body = {
+			'user_id': userId,
+			'station_id': stationId,
+			status: 0,
+			offset: 0,
+			rows: 10,
+			equ_sn: ''
+		};
+		//
+		return fetch(url, {
+			method: 'POST',
+			headers: {
+				accept: 'application/json, text/plain, */*',
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+				'token': this.token,
+			},
+			body: JSON.stringify(body)
+		}).then(async response => {
+			if (!response.ok) throw new Error('[deviceEqulist] failed to retrieve data');
+			const data = await response.json();
+			// @ts-ignore
+			if (data.code == 1) {
+				// @ts-ignore
+				return data.data.list.map((item) => item.INV_SN);
+			} else {
+				throw new Error('[deviceEqulist] incorrect data received');
+			}
+		});
+	}
+
+	/**
+	* Data from api 'savings'
+	* @param {number} stationId
+	* @returns {Promise<object>} data
+	*/
+	async deviceSavings(stationId) {
 		this.log.debug(`[deviceSavings] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/station/all/savings';
 		//
@@ -276,7 +359,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {number} stationId
 	 * @returns {Promise<object>} data
 	 */
-	deviceOverview(stationId) {
+	async deviceOverview(stationId) {
 		this.log.debug(`[deviceOverview] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/station/storage/overview';
 		//
@@ -311,7 +394,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {number} stationId
 	 * @returns {Promise<object>} data
 	 */
-	devicePowerFlow(stationId) {
+	async devicePowerFlow(stationId) {
 		this.log.debug(`[devicePowerFlow] Station ID: ${stationId}`);
 		const url = this.urlBase + '/api/home/station/powerFlow';
 		const params = new URLSearchParams();
@@ -344,7 +427,7 @@ class Renacidc extends utils.Adapter {
 	 * @param {number} userId
 	 * @returns {Promise<array>} stationIdList
 	 */
-	stationList(userId) {
+	async stationList(userId) {
 		this.log.debug(`[stationList] User ID: ${userId}`);
 		const url = this.urlBase + '/api/station/list';
 		//
@@ -381,7 +464,7 @@ class Renacidc extends utils.Adapter {
 	 * @returns {Promise<number>} userId
 	 * @token
 	 */
-	initializeStation() {
+	async initializeStation() {
 		this.log.debug('[initializeStation]');
 		const url = this.urlBase + '/api/user/login';
 		//
@@ -487,6 +570,10 @@ class Renacidc extends utils.Adapter {
 	// Helper
 	isNumber(n) {
 		return !isNaN(parseFloat(n)) && !isNaN(n - 0);
+	}
+	dateToday(){
+		const d = new Date();
+		return  [d.getFullYear(), d.getMonth()+1, d.getDate()].join('-') ;
 	}
 	//
 	removeInvalidCharacters(inputString) {
