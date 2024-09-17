@@ -83,17 +83,17 @@
       }
     },
     "titleLang": {
-      "en": "renacidc",
-      "de": "renacidc",
-      "ru": "Ренацид",
-      "pt": "renacidc",
-      "nl": "reacidc",
-      "fr": "renacidc",
-      "it": "rinacidc",
-      "es": "renacidc",
-      "pl": "renacidc",
-      "uk": "ренацид",
-      "zh-cn": "雷诺酸"
+      "en": "Renac Inverter Data Collector",
+      "de": "Datensammler für Wechselrichter von Renac",
+      "ru": "Инвертор Renac Сборщик данных",
+      "pt": "Renac Inverter Coletor de dados",
+	  "nl": "Renac-inverter Gegevensverzamelaar",
+	  "fr": "Onduleur de rénaque Collecteur de données",
+	  "it": "Inverter Renac Raccolta dati",
+	  "es": "Renac Inverter Data Collector",
+	  "pl": "Renac Inverter Kolekcjoner danych",
+	  "uk": "Ренак Інвертор Збір даних",
+	  "zh-cn": "雷纳克反转器 数据收集器"
     },
     "desc": {
       "en": "Data collection from solar inverter renac",
