@@ -21,6 +21,7 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
+					"xl": 4,
 					"label": "username"
 				},
 				"password": {
@@ -29,6 +30,7 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
+					"xl": 4,
 					"label": "password"
 				},
 				"pollInterval": {
@@ -37,6 +39,7 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
+					"xl": 4,
 					"label": "pollInterval",
 					"tooltip": "tooltip_pollInterval"
 				}
@@ -61,7 +64,8 @@
 					"xs": 12,
 					"sm": 12,
 					"md": 6,
-					"lg": 6
+					"lg": 6,
+					"xl": 4
 				}
 			}
 		}
