@@ -1,6 +1,9 @@
 {
 	"i18n": true,
 	"type": "tabs",
+	"tabsStyle": {
+		"width": "calc(100% - 100px)"
+	},
 	"items": {
 		"_configuration": {
 			"type": "panel",
@@ -14,6 +17,7 @@
 				},
 				"username": {
 					"type": "text",
+					"xs": 12,
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
@@ -21,6 +25,7 @@
 				},
 				"password": {
 					"type": "password",
+					"xs": 12,
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
@@ -28,6 +33,7 @@
 				},
 				"pollInterval": {
 					"type": "number",
+					"xs": 12,
 					"sm": 12,
 					"md": 6,
 					"lg": 6,
@@ -52,7 +58,10 @@
 					"delimiter": ",",
 					"label": "termsToBeExcluded",
 					"help": "designateTheValues",
-					"sm": 12
+					"xs": 12,
+					"sm": 12,
+					"md": 6,
+					"lg": 6
 				}
 			}
 		}
