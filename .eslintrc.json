@@ -42,6 +42,10 @@
 		]
 	},
 	"parserOptions": {
+<<<<<<< HEAD
 		"ecmaVersion": 2020
+=======
+		"ecmaVersion": "latest"
+>>>>>>> 572fca5 (responsive-design customized)
 	}
 }

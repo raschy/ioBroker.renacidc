@@ -1,7 +1,12 @@
 {
   "name": "iobroker.renacidc",
+<<<<<<< HEAD
   "version": "0.1.2",
   "description": "Reading the data from solar inverter",
+=======
+  "version": "0.0.1",
+  "description": "Read data from renac inverter",
+>>>>>>> 572fca5 (responsive-design customized)
   "author": {
     "name": "raschy",
     "email": "raschy@gmx.de"
@@ -9,20 +14,34 @@
   "homepage": "https://github.com/raschy/ioBroker.renacidc",
   "license": "MIT",
   "keywords": [
+<<<<<<< HEAD
     "Renac",
     "Inverter",
     "Solar",
     "ioBroker"
+=======
+    "ioBroker",
+    "template",
+    "Smart Home",
+    "home automation"
+>>>>>>> 572fca5 (responsive-design customized)
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/raschy/ioBroker.renacidc.git"
   },
   "engines": {
+<<<<<<< HEAD
     "node": ">= 18"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.1"
+=======
+    "node": ">= 20"
+  },
+  "dependencies": {
+    "@iobroker/adapter-core": "^3.2.2"
+>>>>>>> 572fca5 (responsive-design customized)
   },
   "devDependencies": {
     "@alcalzone/release-script": "^3.8.0",
@@ -31,6 +50,7 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/adapter-dev": "^1.3.0",
     "@iobroker/testing": "^5.0.0",
+<<<<<<< HEAD
     "@tsconfig/node18": "^18.2.4",
     "@types/chai": "^4.3.11",
     "@types/chai-as-promised": "^7.1.8",
@@ -47,6 +67,24 @@
     "sinon": "^19.0.2",
     "sinon-chai": "^3.7.0",
     "typescript": "~5.6.2"
+=======
+    "@tsconfig/node20": "^20.1.4",
+    "@types/chai-as-promised": "^7.1.8",
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^20.17.0",
+    "@types/proxyquire": "^1.3.31",
+    "@types/sinon": "^17.0.3",
+    "@types/sinon-chai": "^3.2.12",
+    "chai-as-promised": "^7.1.2",
+    "chai": "^4.5.0",
+    "eslint": "^8.57.1",
+    "mocha": "^10.7.3",
+    "proxyquire": "^2.1.3",
+    "sinon": "^19.0.2",
+    "sinon-chai": "^3.7.0",
+    "typescript": "~5.0.4"
+>>>>>>> 572fca5 (responsive-design customized)
   },
   "main": "main.js",
   "files": [
@@ -72,4 +110,8 @@
     "url": "https://github.com/raschy/ioBroker.renacidc/issues"
   },
   "readmeFilename": "README.md"
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 572fca5 (responsive-design customized)

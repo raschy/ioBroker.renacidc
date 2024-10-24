@@ -7,12 +7,20 @@
 	"items": {
 		"_configuration": {
 			"type": "panel",
+<<<<<<< HEAD
 			"label": "_settings",
+=======
+			"label": "settings",
+>>>>>>> 572fca5 (responsive-design customized)
 			"items": {
 				"_headerSettings": {
 					"newLine": true,
 					"type": "header",
+<<<<<<< HEAD
 					"text": "settings",
+=======
+					"text": "setup",
+>>>>>>> 572fca5 (responsive-design customized)
 					"size": 2
 				},
 				"username": {

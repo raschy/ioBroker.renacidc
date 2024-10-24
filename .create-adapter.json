@@ -3,12 +3,16 @@
 	"target": "directory",
 	"adapterName": "renacidc",
 	"title": "Renac IDC",
+<<<<<<< HEAD
 	"description": "Reading the data from solar inverter",
 	"keywords": [
 		"Renac",
 		"Inverter",
 		"Solar"
 	],
+=======
+	"description": "Read data from renac inverter",
+>>>>>>> 572fca5 (responsive-design customized)
 	"expert": "no",
 	"features": [
 		"adapter"
@@ -20,7 +24,11 @@
 	"dataSource": "poll",
 	"connectionIndicator": "no",
 	"language": "JavaScript",
+<<<<<<< HEAD
 	"nodeVersion": "16",
+=======
+	"nodeVersion": "20",
+>>>>>>> 572fca5 (responsive-design customized)
 	"adminUi": "json",
 	"tools": [
 		"ESLint",
@@ -31,7 +39,10 @@
 	"devServerPort": 8081,
 	"indentation": "Tab",
 	"quotes": "single",
+<<<<<<< HEAD
 	"es6class": "yes",
+=======
+>>>>>>> 572fca5 (responsive-design customized)
 	"authorName": "raschy",
 	"authorGithub": "raschy",
 	"authorEmail": "raschy@gmx.de",
@@ -40,5 +51,9 @@
 	"defaultBranch": "main",
 	"license": "MIT License",
 	"dependabot": "yes",
+<<<<<<< HEAD
 	"creatorVersion": "2.5.0"
+=======
+	"creatorVersion": "2.6.5"
+>>>>>>> 572fca5 (responsive-design customized)
 }

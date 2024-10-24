@@ -1,13 +1,24 @@
 {
     "renacidc adapter settings": "Renac IDC 的适配器设置",
+<<<<<<< HEAD
     "_settings": "设置",
     "settings": "设置",
+=======
+    "settings": "设置",
+    "setup": "设置",
+>>>>>>> 572fca5 (responsive-design customized)
     "username": "用户名",
     "password": "密码",
     "pollInterval": "投票率",
     "tooltip_pollInterval": "最小值为 60 秒",
+<<<<<<< HEAD
     "blackList": "黑名单",
     "excludedValues": "排除值",
     "termsToBeExcluded": "此条款将被排除",
+=======
+    "blacklist": "黑名单",
+    "excludedValues": "排除值",
+    "termsToBeExcluded": "排除此条款",
+>>>>>>> 572fca5 (responsive-design customized)
     "designateTheValues": "指定值"
 }
