@@ -1,25 +1,13 @@
 {
     "renacidc adapter settings": "Adapterinstellingen voor Renac IDC",
-<<<<<<< HEAD
     "_settings": "Instellingen",
     "settings": "Instellingen",
-=======
-    "settings": "Instellingen",
-    "setup": "Instellingen",
->>>>>>> 572fca5 (responsive-design customized)
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
     "pollInterval": "Pollrate",
     "tooltip_pollInterval": "Minimale waarde is 60 seconden",
-<<<<<<< HEAD
     "blackList": "Zwarte lijst",
     "excludedValues": "uitgesloten waarden",
     "termsToBeExcluded": "Voorwaarden hiervoor zijn uitgesloten",
     "designateTheValues": "Geef de waarden aan"
-=======
-    "blacklist": "Zwarte lijst",
-    "excludedValues": "uitgesloten waarden",
-    "termsToBeExcluded": "Voorwaarden hiervoor zijn uitgesloten",
-    "designateTheValues": "Benoem of verwijder de waarden"
->>>>>>> 572fca5 (responsive-design customized)
 }

@@ -1,21 +1,12 @@
 {
     "renacidc adapter settings": "Configuración del adaptador para Renac IDC",
-<<<<<<< HEAD
     "_settings": "Ajustes",
     "settings": "Ajustes",
-=======
-    "settings": "Ajustes",
-    "setup": "Ajustes",
->>>>>>> 572fca5 (responsive-design customized)
     "username": "Nombre de usuario",
     "password": "Contraseña",
     "pollInterval": "encuesta",
     "tooltip_pollInterval": "El valor mínimo es 60 segundos.",
-<<<<<<< HEAD
     "blackList": "Lista negra",
-=======
-    "blacklist": "Lista negra",
->>>>>>> 572fca5 (responsive-design customized)
     "excludedValues": "Valores excluidos",
     "termsToBeExcluded": "Términos que serán excluidos",
     "designateTheValues": "Designar los valores"
