@@ -30,6 +30,7 @@ For further information on the product range, please visit the official website:
 -->
 ### **WORK IN PROGRESS**
 * (raschy) responsive-design customized
+* (raschy) Translations revised
 
 ### 0.1.2 (2024-08-30)
 * (raschy) Inverter details addet

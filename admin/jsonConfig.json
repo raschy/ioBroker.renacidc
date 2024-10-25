@@ -7,12 +7,12 @@
 	"items": {
 		"_configuration": {
 			"type": "panel",
-			"label": "_settings",
+			"label": "settings",
 			"items": {
 				"_headerSettings": {
 					"newLine": true,
 					"type": "header",
-					"text": "settings",
+					"text": "setup",
 					"size": 2
 				},
 				"username": {

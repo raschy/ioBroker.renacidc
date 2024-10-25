@@ -1,13 +1,13 @@
 {
     "renacidc adapter settings": "Adaptereinstellungen für Renac IDC",
-    "_settings": "Einstellungen",
     "settings": "Einstellungen",
-    "username": "Nutzername",
+    "setup": "Einstellungen",
+    "username": "Benutzername",
     "password": "Passwort",
-    "pollInterval": "Abfragerate",
+    "pollInterval": "Umfragerate",
     "tooltip_pollInterval": "Der Mindestwert beträgt 60 Sekunden",
-    "blackList": "Schwarze Liste",
+    "blacklist": "Schwarze Liste",
     "excludedValues": "ausgeschlossene Werte",
-    "termsToBeExcluded": "Hier aufgeführte Werte werden ausgeschlossen",
-    "designateTheValues": "Benennen Sie die Werte einzeln oder durch Komma getrennt"
+    "termsToBeExcluded": "Diese Werte sind ausgeschlossen",
+    "designateTheValues": "Bestimmen oder löschen Sie die Werte"
 }

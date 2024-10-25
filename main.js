@@ -4,7 +4,7 @@
 
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
-'use strict';
+//'use strict';
 
 // Load your modules here, e.g.:
 const utils = require('@iobroker/adapter-core');
@@ -575,23 +575,19 @@ class Renacidc extends utils.Adapter {
 		const d = new Date();
 		return  [d.getFullYear(), d.getMonth()+1, d.getDate()].join('-') ;
 	}
-	//
 	removeInvalidCharacters(inputString) {
 		const regexPattern = '[^a-zA-Z0-9]+';
 		const regex = new RegExp(regexPattern, 'gu');
 		return inputString.replace(regex, '_');
 	}
-	//
 	// Regex to remove the underscore and process singlewords
 	makeName(inputString) {
 		return inputString.replace(/_/g, ' ').split(' ').map(this.capitalizeFirstLetter).join(' ');
 	}
-
 	// Function to convert the first letter of a word into capital letters
 	capitalizeFirstLetter(word) {
 		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 	}
-
 	//	Trying to guess the unit of measurement
 	guessUnit(inputString) {
 		inputString = inputString.toLowerCase();

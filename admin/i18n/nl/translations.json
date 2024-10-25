@@ -1,13 +1,13 @@
 {
     "renacidc adapter settings": "Adapterinstellingen voor Renac IDC",
-    "_settings": "Instellingen",
     "settings": "Instellingen",
+    "setup": "Instellingen",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
     "pollInterval": "Pollrate",
     "tooltip_pollInterval": "Minimale waarde is 60 seconden",
-    "blackList": "Zwarte lijst",
+    "blacklist": "Zwarte lijst",
     "excludedValues": "uitgesloten waarden",
-    "termsToBeExcluded": "Voorwaarden hiervoor zijn uitgesloten",
-    "designateTheValues": "Geef de waarden aan"
+    "termsToBeExcluded": "Deze waarden zijn uitgesloten",
+    "designateTheValues": "Wijs de waarden aan of verwijder ze"
 }

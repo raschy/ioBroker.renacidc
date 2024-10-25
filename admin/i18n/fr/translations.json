@@ -1,13 +1,13 @@
 {
     "renacidc adapter settings": "Paramètres de l'adaptateur pour Renac IDC",
-    "_settings": "Paramètres",
     "settings": "Paramètres",
+    "setup": "Paramètres",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
     "pollInterval": "Polluer",
     "tooltip_pollInterval": "La valeur minimale est de 60 secondes",
-    "blackList": "Liste noire",
+    "blacklist": "Liste noire",
     "excludedValues": "Valeurs exclues",
-    "termsToBeExcluded": "Conditions qui seront exclues",
-    "designateTheValues": "Désigner les valeurs"
+    "termsToBeExcluded": "Ces valeurs sont exclues",
+    "designateTheValues": "Désigner ou supprimer les valeurs"
 }
