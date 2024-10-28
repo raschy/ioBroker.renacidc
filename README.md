@@ -29,6 +29,7 @@ For further information on the product range, please visit the official website:
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (raschy) updated to adapter-core 3.2.2
 * (raschy) responsive-design customized
 * (raschy) Translations revised
 
