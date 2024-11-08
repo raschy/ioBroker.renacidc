@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "renacidc",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "news": {
+      "0.1.4": {
+        "en": "Deploy reactivated in the workflow",
+        "de": "Bereitstellung im Workflow reaktiviert",
+        "ru": "Развертывание в рабочем процессе",
+        "pt": "Implante reativado no fluxo de trabalho",
+        "nl": "Inschakelen opnieuw geactiveerd in de workflow",
+        "fr": "Déployer réactivé dans le flux de travail",
+        "it": "Disattivato nel flusso di lavoro",
+        "es": "Despliegue reactivado en el flujo de trabajo",
+        "pl": "Uruchomić reaktywowane w strumieniu pracy",
+        "uk": "Розгортання реактивованого в робочому процесі",
+        "zh-cn": "在工作流程中重新部署"
+      },
       "0.1.3": {
         "en": "updated to adapter-core 3.2.2\nresponsive-design customized\nTranslations revised",
         "de": "aktualisiert auf adapter-kern 3.2.2\nresponsive-design maßgeschneidert\nÜbersetzungen überarbeitet",
@@ -79,19 +92,6 @@
         "es": "Despliegue (2) en npm",
         "pl": "Deploy(2) na przykład",
         "uk": "Розгортання(2) на npm",
-        "zh-cn": "页:1"
-      },
-      "0.0.4": {
-        "en": "Deploy on npm",
-        "de": "Bereitstellung auf npm",
-        "ru": "Развертывание на npm",
-        "pt": "Implante em npm",
-        "nl": "Vertaling:",
-        "fr": "Déploiement sur npm",
-        "it": "Deploy on npm",
-        "es": "Despliegue en npm",
-        "pl": "Przykłady",
-        "uk": "Розгортання на npm",
         "zh-cn": "页:1"
       }
     },
