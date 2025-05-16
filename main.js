@@ -284,7 +284,7 @@ class Renacidc extends utils.Adapter {
             if (!response.ok) {
                 throw new Error('[deviceInvDetail] failed to retrieve data');
             }
-            const data = (await response.json()) as { code: number; data: any };
+            const data = await response.json();
             if (data.code == 1) {
                 return data.data.im;
             }
