@@ -284,10 +284,8 @@ class Renacidc extends utils.Adapter {
             if (!response.ok) {
                 throw new Error('[deviceInvDetail] failed to retrieve data');
             }
-            const data = await response.json();
-            // @ts-ignore
+            const data = (await response.json()) as { code: number; data: any };
             if (data.code == 1) {
-                // @ts-ignore
                 return data.data.im;
             }
             throw new Error('[deviceInvDetail] incorrect data received');
@@ -329,9 +327,9 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[deviceEqulist] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
+            // @ts-expert-error
             if (data.code == 1) {
-                // @ts-ignore
+                // @ts-expert-error
                 return data.data.list.map(item => item.INV_SN);
             }
             throw new Error('[deviceEqulist] incorrect data received');
@@ -367,9 +365,7 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[deviceSavings] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
             if (data.code == 1) {
-                // @ts-ignore
                 return data.data;
             }
             throw new Error('[deviceSavings] incorrect data received');
@@ -405,9 +401,7 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[deviceOverview] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
             if (data.code == 1) {
-                // @ts-ignore
                 return data.data;
             }
             throw new Error('[deviceOverview] incorrect data received');
@@ -441,9 +435,7 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[devicePowerFlow] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
             if (data.code == 1) {
-                // @ts-ignore
                 return data.data;
             }
             throw new Error('[devicePowerFlow] incorrect data received');
@@ -481,9 +473,8 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[stationList] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
+
             if (data.code == 1) {
-                // @ts-ignore
                 return data.data.list.map(item => item.station_id);
             }
             throw new Error('[stationList] incorrect data received');
@@ -518,11 +509,10 @@ class Renacidc extends utils.Adapter {
                 throw new Error('[initializeStation] failed to retrieve data');
             }
             const data = await response.json();
-            // @ts-ignore
+			console.log(`[initializeStation] ${JSON.stringify(data)}`);
             if (data.code == 1) {
-                // @ts-ignore
                 this.token = data.user.token;
-                // @ts-ignore
+				console.log(`[initializeStation] Token: ${this.token}`);
                 return data.data;
             }
             throw new Error('[initializeStation] incorrect data received');
