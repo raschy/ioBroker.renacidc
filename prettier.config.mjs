@@ -5,4 +5,6 @@ export default {
     ...prettierConfig,
     // uncomment next line if you prefer double quotes
     // singleQuote: false,
+	tabWidth: 4,
+	useTabs: true
 }

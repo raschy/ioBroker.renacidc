@@ -4,16 +4,34 @@
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "type": "node",
+			{
+            "name": "Launch normal",
+            "program": "${workspaceFolder}/main.js",
+            "args": ["--instance", "0", "--force", "--logs", "--debug"],
             "request": "launch",
-            "name": "Programm starten",
+            "stopOnEntry": true,
+            "console": "internalConsole",
+            "outputCapture": "std",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/main.js",
+            "type": "node",
+            "env": {"NODE_PATH":"${workspaceFolder}/.dev-server/default/node_modules"}
+        },
+		{
+            "type": "node",
+            "request": "launch",
+            "name": "default Launch ioBroker Adapter ",
+            "skipFiles": ["<node_internals>/**"],
             "args": ["--debug", "0"],
-            "outFiles": ["${workspaceFolder}/.dev-server/default/node_modules/iobroker.renacidc/build/**/*.js"]
-        }
+            "program": "${workspaceFolder}/main.js",
+            "cwd": "${workspaceFolder}/.dev-server/default",
+            "stopOnEntry": true,
+            "sourceMaps": true,
+            "console": "internalConsole",
+            "outputCapture": "std",
+            "env": {"NODE_PATH":"${workspaceFolder}/.dev-server/default/node_modules"},
+            "resolveSourceMapLocations": ["${workspaceFolder}/**", "**/node_modules/**"]
+        }        
     ]
 }
