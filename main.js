@@ -509,10 +509,8 @@ class Renacidc extends utils.Adapter {
 				throw new Error('[initializeStation] failed to retrieve data');
 			}
 			const data = await response.json();
-			console.log(`[#initializeStation#] ${JSON.stringify(data)}`);
 			if (data.code == 1) {
 				this.token = data.user.token;
-				console.log(`[#initializeStation#] Token: ${this.token}`);
 				return data.data;
 			}
 			throw new Error('[initializeStation] incorrect data received');
