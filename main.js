@@ -70,7 +70,7 @@ class Renacidc extends utils.Adapter {
 	 * requestInverterData()
 	 */
 	async requestInverterData() {
-		this.log.info('Adapter tries to retrieve data from the cloud');
+		this.log.debug('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
 			//
@@ -555,7 +555,7 @@ class Renacidc extends utils.Adapter {
 			this.executionInterval = this.config.pollInterval;
 		}
 		// __________________
-		this.log.info(`Retrieving data from the inverter will be done every ${this.executionInterval} seconds`);
+		this.log.debug(`Retrieving data from the inverter will be done every ${this.executionInterval} seconds`);
 		this.log.debug(`checkUserData is ready`);
 		this.checkUserDataOk = true;
 		return;
