@@ -67,6 +67,8 @@ For further information on the product range, please visit the official website:
 ### 0.0.1 (2023-09-24)
 * (raschy) initial release
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 MIT License
 
