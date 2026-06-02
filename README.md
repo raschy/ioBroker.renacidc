@@ -28,6 +28,9 @@ For further information on the product range, please visit the official website:
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 0.1.4 (2024-11-08)
 * (raschy) Deploy reactivated in the workflow
 
