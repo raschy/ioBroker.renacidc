@@ -1,0 +1,13 @@
+{
+    "blacklist": "黑名单",
+    "designateTheValues": "指定或删除值",
+    "excludedValues": "排除值",
+    "password": "密码",
+    "pollInterval": "投票率",
+    "renacidc adapter settings": "Renac IDC 的适配器设置",
+    "settings": "设置",
+    "setup": "设置",
+    "termsToBeExcluded": "这些值被排除在外",
+    "tooltip_pollInterval": "最小值为 60 秒",
+    "username": "用户名"
+}

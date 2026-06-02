@@ -1,0 +1,13 @@
+{
+    "blacklist": "Zwarte lijst",
+    "designateTheValues": "Wijs de waarden aan of verwijder ze",
+    "excludedValues": "uitgesloten waarden",
+    "password": "Wachtwoord",
+    "pollInterval": "Pollrate",
+    "renacidc adapter settings": "Adapterinstellingen voor Renac IDC",
+    "settings": "Instellingen",
+    "setup": "Instellingen",
+    "termsToBeExcluded": "Deze waarden zijn uitgesloten",
+    "tooltip_pollInterval": "Minimale waarde is 60 seconden",
+    "username": "Gebruikersnaam"
+}

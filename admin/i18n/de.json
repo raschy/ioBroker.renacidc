@@ -1,0 +1,13 @@
+{
+    "blacklist": "Schwarze Liste",
+    "designateTheValues": "Bestimmen oder löschen Sie die Werte",
+    "excludedValues": "ausgeschlossene Werte",
+    "password": "Passwort",
+    "pollInterval": "Umfragerate",
+    "renacidc adapter settings": "Adaptereinstellungen für Renac IDC",
+    "settings": "Einstellungen",
+    "setup": "Einstellungen",
+    "termsToBeExcluded": "Diese Werte sind ausgeschlossen",
+    "tooltip_pollInterval": "Der Mindestwert beträgt 60 Sekunden",
+    "username": "Benutzername"
+}
