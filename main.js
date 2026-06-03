@@ -27,8 +27,8 @@ class Renacidc extends utils.Adapter {
 		this.interactiveBlacklist = '';
 		this.checkUserDataOk = false;
 		this.executionInterval = 90;
+		this.urlBase = 'https://europe.renacpower.com:8084';
 	}
-	urlBase = 'https://europe.renacpower.com:8084';
 
 	/**
 	 * Is called when databases are connected and adapter received configuration.
@@ -430,9 +430,6 @@ class Renacidc extends utils.Adapter {
 	async devicePowerFlow(stationId) {
 		this.log.debug(`[devicePowerFlow] Station ID: ${stationId}`);
 		const url = `${this.urlBase}/api/home/station/powerFlow`;
-		/*const body = {
-			station_id: stationId,
-		};*/
 		const params = new URLSearchParams();
 		params.append('station_id', String(stationId));
 		this.log.debug(`[devicePowerFlow] URLSearchParams: ${params.toString()}`);
@@ -538,10 +535,10 @@ class Renacidc extends utils.Adapter {
 	}
 
 	/**
-	 * getTimestampAndSign
+	 * getTimestampAndSign()
 	 * generate timestamp and sign for api header
-	 * 
-	 * @returns 
+	 *
+	 * @returns {object} - timestamp and sign
 	 */
 	getTimestampAndSign() {
 		if (!this.token) {
@@ -587,8 +584,7 @@ class Renacidc extends utils.Adapter {
 			return;
 		}
 		*/
-		//this.urlBase = "https://europe.renacpower.com:8084";
-		
+
 		// __________________
 		// check if the sync time is a number, if not, the string is parsed to a number
 		if (isNaN(this.config.pollInterval) || this.config.pollInterval < 60) {
@@ -644,7 +640,7 @@ class Renacidc extends utils.Adapter {
 		// eslint-disable-next-line jsdoc/reject-any-type, jsdoc/check-tag-names
 		return /** @type {any} */ (await response.json());
 	}
-	
+
 	isNumber(n) {
 		return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 	}
