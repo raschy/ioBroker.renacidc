@@ -28,6 +28,7 @@ class Renacidc extends utils.Adapter {
 		this.checkUserDataOk = false;
 		this.executionInterval = 90;
 	}
+	urlBase = 'https://europe.renacpower.com:8084';
 
 	/**
 	 * Is called when databases are connected and adapter received configuration.
@@ -549,7 +550,7 @@ class Renacidc extends utils.Adapter {
 		//
 		const salt = '9P@3kF7sD2&zX5cV8bNm1qR4tY6uI0o';
 		//
-		const timestamp = Math.floor(Date.now() / 1000);
+		const timestamp = String(Math.floor(Date.now() / 1000));
 		const raw = this.token + timestamp + salt;
 		const sign = CryptoJS.MD5(raw).toString();
 		//
@@ -586,7 +587,7 @@ class Renacidc extends utils.Adapter {
 			return;
 		}
 		*/
-		this.urlBase = "https://europe.renacpower.com:8084";
+		//this.urlBase = "https://europe.renacpower.com:8084";
 		
 		// __________________
 		// check if the sync time is a number, if not, the string is parsed to a number
