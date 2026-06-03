@@ -60,7 +60,7 @@ class Renacidc extends utils.Adapter {
 	onUnload(callback) {
 		try {
 			// Here you must clear all timeouts or intervals that may still be active
-			this.updateInterval && clearInterval(this.updateInterval);
+			this.updateInterval && this.clearInterval(this.updateInterval);
 			this.log.info('cleaned everything up...');
 			callback();
 		} catch (e) {
