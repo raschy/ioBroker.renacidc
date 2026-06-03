@@ -41,11 +41,9 @@ class Renacidc extends utils.Adapter {
 		this.interactiveBlacklist = this.config.deviceBlacklist;
 		//
 		if (this.checkUserDataOk) {
-			this.log.debug('Adapter is trying to retrieve data from the cloud');
 			await this.requestInverterData();
 			//
 			this.updateInterval = this.setInterval(async () => {
-			this.log.debug('Adapter is trying to retrieve data from the cloud repeatly');
 				await this.requestInverterData();
 			}, this.executionInterval * 1000);
 		} else {
@@ -78,9 +76,6 @@ class Renacidc extends utils.Adapter {
 		this.log.debug('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
-			console.log(`[requestInverterData] User ID: ${userId}`);
-			//const addHeader = this.getTimestampAndSign();
-			//this.log.debug(`[requestInverterData] Timestamp: ${addHeader.timestamp} Sign: ${addHeader.sign}`);
 			//
 			const stationIdList = await this.stationList(userId);
 			for (const stationId of stationIdList) {
@@ -469,10 +464,7 @@ class Renacidc extends utils.Adapter {
 	 */
 	async stationList(userId) {
 		this.log.debug(`[stationList] User ID: ${userId}`);
-		//const url = `${this.urlBase}/api/station/list`;
-		const url = 'https://europe.renacpower.com:8084/api/station/list'
-		this.log.debug(`[stationList] URL: ${url}`);
-		this.log.debug(`[stationList] Token: ${this.token}`);
+		const url = `${this.urlBase}/api/station/list`;
 		//
 		const addHeader = this.getTimestampAndSign();
 		const body = {
@@ -498,8 +490,6 @@ class Renacidc extends utils.Adapter {
 				throw new Error('[stationList] failed to retrieve data');
 			}
 			const data = await response.json();
-			this.log.debug(`[stationList] Data received: ${JSON.stringify(data)}`);
-
 			if (data.code == 1) {
 				return data.data.list.map(item => item.station_id);
 			}
@@ -515,8 +505,6 @@ class Renacidc extends utils.Adapter {
 	async initializeStation() {
 		this.log.debug('[initializeStation]');
 		const url = `${this.urlBase}/api/user/login`;
-		//const url = 'https://europe.renacpower.com:8084/api/user/login';
-		console.log(`[initializeStation] URL: ${url}`);
 		//
 		const body = {
 			login_name: this.config.username,
