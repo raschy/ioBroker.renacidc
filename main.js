@@ -266,13 +266,13 @@ class Renacidc extends utils.Adapter {
 	async deviceInvDetail(equSn, today) {
 		this.log.debug(`[deviceInvDetail] Equ SN: ${equSn} Datum: ${today}`);
 		const url = `${this.urlBase}/bg/inv/detail`;
-		//
 		const body = {
 			equ_sn: equSn,
 			offset: 0,
 			rows: 10,
 			time: today,
 		};
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -282,8 +282,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
-				timestamp: this.getTimestampAndSign().timestamp,
-				sign: this.getTimestampAndSign().sign,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -308,7 +308,6 @@ class Renacidc extends utils.Adapter {
 	async deviceEqulist(userId, stationId) {
 		this.log.debug(`[deviceEqulist] User ID: ${userId} Station ID: ${stationId}`);
 		const url = `${this.urlBase}/bg/equList`;
-		//
 		const body = {
 			user_id: userId,
 			station_id: stationId,
@@ -317,6 +316,7 @@ class Renacidc extends utils.Adapter {
 			rows: 10,
 			equ_sn: '',
 		};
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -326,8 +326,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
-				timestamp: this.getTimestampAndSign().timestamp,
-				sign: this.getTimestampAndSign().sign,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -353,10 +353,10 @@ class Renacidc extends utils.Adapter {
 	async deviceSavings(stationId) {
 		this.log.debug(`[deviceSavings] Station ID: ${stationId}`);
 		const url = `${this.urlBase}/api/station/all/savings`;
-		//
 		const body = {
 			station_id: stationId,
 		};
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -366,8 +366,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
-				timestamp: this.getTimestampAndSign().timestamp,
-				sign: this.getTimestampAndSign().sign,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -391,10 +391,10 @@ class Renacidc extends utils.Adapter {
 	async deviceOverview(stationId) {
 		this.log.debug(`[deviceOverview] Station ID: ${stationId}`);
 		const url = `${this.urlBase}/api/station/storage/overview`;
-		//
 		const body = {
 			station_id: stationId,
 		};
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -404,8 +404,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
-				timestamp: this.getTimestampAndSign().timestamp,
-				sign: this.getTimestampAndSign().sign,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -431,6 +431,7 @@ class Renacidc extends utils.Adapter {
 		const url = `${this.urlBase}/api/home/station/powerFlow`;
 		const params = new URLSearchParams();
 		params.append('station_id', String(stationId));
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -440,8 +441,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
-				timestamp: this.getTimestampAndSign().timestamp,
-				sign: this.getTimestampAndSign().sign,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: params.toString(),
 		}).then(async response => {
@@ -465,13 +466,12 @@ class Renacidc extends utils.Adapter {
 	async stationList(userId) {
 		this.log.debug(`[stationList] User ID: ${userId}`);
 		const url = `${this.urlBase}/api/station/list`;
-		//
-		const addHeader = this.getTimestampAndSign();
 		const body = {
 			user_id: userId,
 			offset: 0,
 			rows: 10,
 		};
+		const addHeader = this.getTimestampAndSign();
 		//
 		return fetch(url, {
 			method: 'POST',
@@ -505,7 +505,6 @@ class Renacidc extends utils.Adapter {
 	async initializeStation() {
 		this.log.debug('[initializeStation]');
 		const url = `${this.urlBase}/api/user/login`;
-		//
 		const body = {
 			login_name: this.config.username,
 			pwd: this.config.password,
@@ -533,11 +532,7 @@ class Renacidc extends utils.Adapter {
 		});
 	}
 
-	/**
-	 * 
-	 * @returns { timestamp, sign } very secure timestamp and sign for api requests
-	 */
-	getTimestampAndSign(){
+	getTimestampAndSign() {
 		if (!this.token) {
 			return null;
 		}
@@ -547,7 +542,7 @@ class Renacidc extends utils.Adapter {
 		const raw = this.token + timestamp + salt;
 		const sign = CryptoJS.MD5(raw).toString();
 
-		return { timestamp, sign };	
+		return { timestamp, sign };
 	}
 	//
 	/**
