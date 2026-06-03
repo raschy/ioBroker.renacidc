@@ -150,7 +150,7 @@
 		"username": "",
 		"password": "",
 		"pollInterval": 90,
-		"base": "https://sec.bg.renacpower.cn:8084",
+		"base": "https://europe.renacpower.com:8084",
 		"deviceBlacklist": ""
 	},
 	"protectedNative": [
