@@ -35,7 +35,7 @@ class Renacidc extends utils.Adapter {
 	 */
 	async onReady() {
 		// Initialize your adapter here
-		this.setState('info.connection', { val: false, ack: true });
+		await this.setState('info.connection', { val: false, ack: true });
 		await this.checkUserData();
 		//
 		this.interactiveBlacklist = this.config.deviceBlacklist;
@@ -47,7 +47,7 @@ class Renacidc extends utils.Adapter {
 				await this.requestInverterData();
 			}, this.executionInterval * 1000);
 		} else {
-			this.setState('info.connection', { val: false, ack: true });
+			await this.setState('info.connection', { val: false, ack: true });
 			this.log.error('Adapter cannot be started without correct settings!');
 		}
 	}
@@ -93,10 +93,10 @@ class Renacidc extends utils.Adapter {
 				}
 			}
 			//
-			this.setState('info.lastUpdate', { val: Date.now(), ack: true });
-			this.setState('info.connection', { val: true, ack: true });
+			await this.setState('info.lastUpdate', { val: Date.now(), ack: true });
+			await this.setState('info.connection', { val: true, ack: true });
 		} catch (error) {
-			this.setState('info.connection', { val: false, ack: true });
+			await this.setState('info.connection', { val: false, ack: true });
 			this.log.error(`[requestInverterData] catch: message ${error.message}`);
 			this.log.debug(`[requestInverterData] catch: stack ${error.stack}`);
 		}
@@ -170,7 +170,7 @@ class Renacidc extends utils.Adapter {
 	 * @param stationId (stationId)
 	 */
 	async updateData(data, folder, stationId) {
-		if (!data || stationId < 1) {
+		if (!data || Number(stationId) < 1) {
 			return;
 		}
 		//
@@ -186,7 +186,10 @@ class Renacidc extends utils.Adapter {
 			const device = this.removeInvalidCharacters(String(stationId));
 			const fullState = `${device}.${entry}`;
 			//
-			const result = this.config.deviceBlacklist.includes(entry);
+			const result = this.config.deviceBlacklist
+				.split(',')
+				.map(item => item.trim())
+				.includes(entry);
 			// Add deleted keys to the blacklist
 			const currentObj = await this.getStateAsync(fullState);
 			if (!result && !currentObj && this.runFirst) {
@@ -214,7 +217,7 @@ class Renacidc extends utils.Adapter {
 	 * @param stationId (stationId)
 	 */
 	async updateDataSub(data, stationId) {
-		if (stationId < 1) {
+		if (Number(stationId) < 1) {
 			return;
 		}
 		//
@@ -222,7 +225,7 @@ class Renacidc extends utils.Adapter {
 			const rawData = data[property][0];
 			for (const element in rawData) {
 				const res = JSON.parse(`{"${this.removeInvalidCharacters(element)}":"${rawData[element]}"}`);
-				this.updateData(res, property, stationId);
+				await this.updateData(res, property, stationId);
 			}
 		}
 	}
@@ -290,7 +293,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[deviceInvDetail] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				return data.data.im;
 			}
@@ -334,10 +337,8 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[deviceEqulist] failed to retrieve data');
 			}
-			const data = await response.json();
-			// @ts-expert-error
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
-				// @ts-expert-error
 				return data.data.list.map(item => item.INV_SN);
 			}
 			throw new Error('[deviceEqulist] incorrect data received');
@@ -374,7 +375,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[deviceSavings] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				return data.data;
 			}
@@ -412,7 +413,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[deviceOverview] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				return data.data;
 			}
@@ -449,7 +450,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[devicePowerFlow] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				return data.data;
 			}
@@ -489,7 +490,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[stationList] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				return data.data.list.map(item => item.station_id);
 			}
@@ -523,7 +524,7 @@ class Renacidc extends utils.Adapter {
 			if (!response.ok) {
 				throw new Error('[initializeStation] failed to retrieve data');
 			}
-			const data = await response.json();
+			const data = await this.parseResponse(response);
 			if (data.code == 1) {
 				this.token = data.user.token;
 				return data.data;
@@ -534,11 +535,11 @@ class Renacidc extends utils.Adapter {
 
 	getTimestampAndSign() {
 		if (!this.token) {
-			return null;
+			throw new Error('[getTimestampAndSign] no token available - login required first');
 		}
 		const salt = '9P@3kF7sD2&zX5cV8bNm1qR4tY6uI0o';
 		//
-		const timestamp = Math.floor(Date.now() / 1000);
+		const timestamp = String(Math.floor(Date.now() / 1000));
 		const raw = this.token + timestamp + salt;
 		const sign = CryptoJS.MD5(raw).toString();
 
@@ -619,6 +620,17 @@ class Renacidc extends utils.Adapter {
 	}
 
 	// Helper
+	/**
+	 * Parse a fetch response body as JSON. The API has no typed schema,
+	 * so the result is intentionally untyped.
+	 *
+	 * @param response (fetch Response)
+	 * @returns parsed JSON body
+	 */
+	async parseResponse(response) {
+		// eslint-disable-next-line jsdoc/reject-any-type, jsdoc/check-tag-names
+		return /** @type {any} */ (await response.json());
+	}
 	isNumber(n) {
 		return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 	}
