@@ -8,6 +8,8 @@
 
 // Load your modules here, e.g.:
 const utils = require('@iobroker/adapter-core');
+const CryptoJS = require('crypto-js');
+//import CryptoJS from 'crypto-js';
 
 class Renacidc extends utils.Adapter {
 	/**
@@ -35,12 +37,15 @@ class Renacidc extends utils.Adapter {
 		// Initialize your adapter here
 		this.setState('info.connection', { val: false, ack: true });
 		await this.checkUserData();
+		//
 		this.interactiveBlacklist = this.config.deviceBlacklist;
 		//
 		if (this.checkUserDataOk) {
+			this.log.debug('Adapter is trying to retrieve data from the cloud');
 			await this.requestInverterData();
 			//
 			this.updateInterval = this.setInterval(async () => {
+			this.log.debug('Adapter is trying to retrieve data from the cloud repeatly');
 				await this.requestInverterData();
 			}, this.executionInterval * 1000);
 		} else {
@@ -73,6 +78,9 @@ class Renacidc extends utils.Adapter {
 		this.log.debug('Adapter tries to retrieve data from the cloud');
 		try {
 			const userId = await this.initializeStation();
+			console.log(`[requestInverterData] User ID: ${userId}`);
+			//const addHeader = this.getTimestampAndSign();
+			//this.log.debug(`[requestInverterData] Timestamp: ${addHeader.timestamp} Sign: ${addHeader.sign}`);
 			//
 			const stationIdList = await this.stationList(userId);
 			for (const stationId of stationIdList) {
@@ -89,6 +97,7 @@ class Renacidc extends utils.Adapter {
 					);
 				}
 			}
+			//
 			this.setState('info.lastUpdate', { val: Date.now(), ack: true });
 			this.setState('info.connection', { val: true, ack: true });
 		} catch (error) {
@@ -278,6 +287,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: this.getTimestampAndSign().timestamp,
+				sign: this.getTimestampAndSign().sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -320,6 +331,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: this.getTimestampAndSign().timestamp,
+				sign: this.getTimestampAndSign().sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -358,6 +371,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: this.getTimestampAndSign().timestamp,
+				sign: this.getTimestampAndSign().sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -394,6 +409,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: this.getTimestampAndSign().timestamp,
+				sign: this.getTimestampAndSign().sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -428,6 +445,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: this.getTimestampAndSign().timestamp,
+				sign: this.getTimestampAndSign().sign,
 			},
 			body: params.toString(),
 		}).then(async response => {
@@ -450,8 +469,12 @@ class Renacidc extends utils.Adapter {
 	 */
 	async stationList(userId) {
 		this.log.debug(`[stationList] User ID: ${userId}`);
-		const url = `${this.urlBase}/api/station/list`;
+		//const url = `${this.urlBase}/api/station/list`;
+		const url = 'https://europe.renacpower.com:8084/api/station/list'
+		this.log.debug(`[stationList] URL: ${url}`);
+		this.log.debug(`[stationList] Token: ${this.token}`);
 		//
+		const addHeader = this.getTimestampAndSign();
 		const body = {
 			user_id: userId,
 			offset: 0,
@@ -466,6 +489,8 @@ class Renacidc extends utils.Adapter {
 				'User-Agent':
 					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
 				token: this.token,
+				timestamp: addHeader.timestamp,
+				sign: addHeader.sign,
 			},
 			body: JSON.stringify(body),
 		}).then(async response => {
@@ -473,6 +498,7 @@ class Renacidc extends utils.Adapter {
 				throw new Error('[stationList] failed to retrieve data');
 			}
 			const data = await response.json();
+			this.log.debug(`[stationList] Data received: ${JSON.stringify(data)}`);
 
 			if (data.code == 1) {
 				return data.data.list.map(item => item.station_id);
@@ -489,6 +515,8 @@ class Renacidc extends utils.Adapter {
 	async initializeStation() {
 		this.log.debug('[initializeStation]');
 		const url = `${this.urlBase}/api/user/login`;
+		//const url = 'https://europe.renacpower.com:8084/api/user/login';
+		console.log(`[initializeStation] URL: ${url}`);
 		//
 		const body = {
 			login_name: this.config.username,
@@ -515,6 +543,23 @@ class Renacidc extends utils.Adapter {
 			}
 			throw new Error('[initializeStation] incorrect data received');
 		});
+	}
+
+	/**
+	 * 
+	 * @returns { timestamp, sign } very secure timestamp and sign for api requests
+	 */
+	getTimestampAndSign(){
+		if (!this.token) {
+			return null;
+		}
+		const salt = '9P@3kF7sD2&zX5cV8bNm1qR4tY6uI0o';
+		//
+		const timestamp = Math.floor(Date.now() / 1000);
+		const raw = this.token + timestamp + salt;
+		const sign = CryptoJS.MD5(raw).toString();
+
+		return { timestamp, sign };	
 	}
 	//
 	/**
