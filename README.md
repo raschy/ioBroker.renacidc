@@ -48,7 +48,9 @@ For further information on the product range, please visit the official website:
 * (raschy) Fixing repository checker issues
 * (raschy) some refaktoring
 
-[Older changelogs can be found there](CHANGELOG_OLD.md)## License
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
+## License
 MIT License
 
 Copyright (c) 2023-2026 raschy <raschy@gmx.de>
